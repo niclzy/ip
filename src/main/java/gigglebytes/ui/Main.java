@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
+import javafx.stage.WindowEvent;
 
 /**
  * A GUI for GiggleBytes using FXML.
@@ -36,7 +37,6 @@ public class Main extends Application {
 
             stage.setMinWidth(400);
             stage.setMinHeight(500);
-
             stage.setResizable(true);
 
             stage.setScene(scene);
@@ -45,6 +45,11 @@ public class Main extends Application {
             controller.setGiggleBytes(giggleBytes);
 
             controller.showWelcome();
+
+            stage.setOnCloseRequest((WindowEvent event) -> {
+                System.out.println("Window closing - saving tasks...");
+                giggleBytes.saveTasks();
+            });
 
             stage.show();
         } catch (IOException e) {

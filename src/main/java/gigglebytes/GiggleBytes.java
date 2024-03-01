@@ -45,6 +45,8 @@ public class GiggleBytes {
             GuiUi guiUi = new GuiUi();
             command.execute(taskList, guiUi, storage);
 
+            storage.saveTasks(taskList);
+
             if (command.isExit()) {
                 return guiUi.getOutput() + "\nGoodbye!";
             }

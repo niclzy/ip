@@ -111,9 +111,5 @@ public class MainWindow extends AnchorPane {
         );
 
         userInput.clear();
-
-        if (input.trim().equalsIgnoreCase("bye")) {
-            giggleBytes.saveTasks();
-        }
     }
 }
