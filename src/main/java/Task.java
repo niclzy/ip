@@ -1,4 +1,4 @@
-public class Task implements Displayable {
+public abstract class Task implements Displayable {
     private final String description;
     private boolean isDone;
 
@@ -27,9 +27,11 @@ public class Task implements Displayable {
         return isDone ? "[X]" : "[ ]";
     }
 
+    public abstract String getTypeIcon();
+
     @Override
     public String getDisplayString() {
-        return getStatusIcon() + " " + getDescription();
+        return "[" + getTypeIcon() + "]" + getStatusIcon() + " " + getDescription();
     }
 
     @Override

@@ -18,7 +18,9 @@ public class GiggleBytes {
         System.out.println("I can help you track and complete your tasks! >.<");
         System.out.println("------------------------------------------------------------------------------");
         System.out.println("Available Commands (Non-Case Sensitive) : >.<");
-        System.out.println("  - Add a task: Just type your task!");
+        System.out.println("  - Add Todo: 'todo [description]'");
+        System.out.println("  - Add Deadline: 'deadline [description] /by [date/time]'");
+        System.out.println("  - Add Event: 'event [description] /from [start] /to [end]'");
         System.out.println("  - List tasks: Type 'list'");
         System.out.println("  - Mark task as done: Type 'mark [number]'");
         System.out.println("  - Mark task as not done: Type 'unmark [number]'");
@@ -33,30 +35,102 @@ public class GiggleBytes {
 
             System.out.println("------------------------------------------------------------------------------");
 
-            if (userInput.equalsIgnoreCase("bye")) {
+            String lowerInput = userInput.toLowerCase();
+
+            if (lowerInput.equals("bye")) {
                 System.out.println("Byte you later! Hope to see you again soon! >.<");
                 System.out.println("Tasks completed today: " + countCompletedTasks(taskList) + " >.<");
                 break;
-            } else if (userInput.equalsIgnoreCase("list")) {
+            } else if (lowerInput.equals("list")) {
                 taskList.printAllItems();
-            } else if (userInput.toLowerCase().startsWith("mark ")) {
+            } else if (lowerInput.startsWith("mark ")) {
                 handleMarkCommand(userInput, taskList, true);
-            } else if (userInput.toLowerCase().startsWith("unmark ")) {
+            } else if (lowerInput.startsWith("unmark ")) {
                 handleMarkCommand(userInput, taskList, false);
+            } else if (lowerInput.startsWith("todo ")) {
+                handleTodoCommand(userInput, taskList);
+            } else if (lowerInput.startsWith("deadline ")) {
+                handleDeadlineCommand(userInput, taskList);
+            } else if (lowerInput.startsWith("event ")) {
+                handleEventCommand(userInput, taskList);
             } else if (userInput.trim().isEmpty()) {
                 System.out.println("GiggleBytes is listening... type something!");
             } else {
-                if (taskList.addTask(userInput)) {
-                    System.out.println(">.< Added: " + userInput);
-                    System.out.println("Now you have " + taskList.getItemCount() + " task(s) in the list.");
-                } else {
-                    System.out.println("Task storage is full! Can't add more tasks. ;-;");
-                }
+                System.out.println("I don't understand that command! >.<");
+                System.out.println("Use 'todo', 'deadline', or 'event' to add tasks!");
             }
+            System.out.println("------------------------------------------------------------------------------");
+        }
+        scanner.close();
+    }
+
+    private static void handleTodoCommand(String userInput, TaskList taskList) {
+        String description = userInput.substring(5).trim();
+        if (description.isEmpty()) {
+            System.out.println("Please provide a description for your todo!");
+            return;
         }
 
-        scanner.close();
-        System.out.println("------------------------------------------------------------------------------");
+        if (taskList.addTodo(description)) {
+            System.out.println("Got it. I've added this task:");
+            System.out.println("  " + taskList.getTask(taskList.getItemCount()));
+            System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
+        } else {
+            System.out.println("Task storage is full! Can't add more tasks. ;-;");
+        }
+    }
+
+    private static void handleDeadlineCommand(String userInput, TaskList taskList) {
+        String rest = userInput.substring(9).trim();
+        String[] parts = rest.split(" /by ");
+
+        if (parts.length < 2) {
+            System.out.println("Please use the format: deadline [description] /by [date/time]");
+            return;
+        }
+
+        String description = parts[0].trim();
+        String by = parts[1].trim();
+
+        if (description.isEmpty() || by.isEmpty()) {
+            System.out.println("Both description and deadline time are required!");
+            return;
+        }
+
+        if (taskList.addDeadline(description, by)) {
+            System.out.println("Got it. I've added this task:");
+            System.out.println("  " + taskList.getTask(taskList.getItemCount()));
+            System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
+        } else {
+            System.out.println("Task storage is full! Can't add more tasks. ;-;");
+        }
+    }
+
+    private static void handleEventCommand(String userInput, TaskList taskList) {
+        String rest = userInput.substring(6).trim();
+        String[] parts = rest.split(" /from | /to ");
+
+        if (parts.length < 3) {
+            System.out.println("Please use the format: event [description] /from [start] /to [end]");
+            return;
+        }
+
+        String description = parts[0].trim();
+        String from = parts[1].trim();
+        String to = parts[2].trim();
+
+        if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
+            System.out.println("Description, start time, and end time are all required!");
+            return;
+        }
+
+        if (taskList.addEvent(description, from, to)) {
+            System.out.println("Got it. I've added this task:");
+            System.out.println("  " + taskList.getTask(taskList.getItemCount()));
+            System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
+        } else {
+            System.out.println("Task storage is full! Can't add more tasks. ;-;");
+        }
     }
 
     private static void handleMarkCommand(String userInput, TaskList taskList, boolean markAsDone) {

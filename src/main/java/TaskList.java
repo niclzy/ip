@@ -3,13 +3,35 @@ public class TaskList extends DisplayableCollection {
         super(maxCapacity);
     }
 
-    public boolean addTask(String description) {
+    public boolean addTodo(String description) {
         if (itemCount < items.length) {
-            items[itemCount] = new Task(description);
+            items[itemCount] = new Todo(description);
             itemCount++;
             return true;
         }
         return false;
+    }
+
+    public boolean addDeadline(String description, String by) {
+        if (itemCount < items.length) {
+            items[itemCount] = new Deadline(description, by);
+            itemCount++;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addEvent(String description, String from, String to) {
+        if (itemCount < items.length) {
+            items[itemCount] = new Event(description, from, to);
+            itemCount++;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addTask(String description) {
+        return addTodo(description);
     }
 
     public Task getTask(int index) {
