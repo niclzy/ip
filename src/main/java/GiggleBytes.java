@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class GiggleBytes {
     public static void main(String[] args) {
         String logo = "  ________.__              .__        __________          __                 \n"
@@ -10,10 +12,29 @@ public class GiggleBytes {
         System.out.println("------------------------------------------------------------------------------");
         System.out.println(logo);
         System.out.println("------------------------------------------------------------------------------");
-        System.out.println("Hello! I'm " + cbName);
+        System.out.println("Hello! o/ I'm " + cbName);
         System.out.println("What can I do for you?");
         System.out.println("------------------------------------------------------------------------------");
-        System.out.println("Bye. Hope to see you again soon!");
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.print(">>> ");
+            String userInput = scanner.nextLine();
+
+            System.out.println("------------------------------------------------------------------------------");
+
+            if (userInput.equalsIgnoreCase("bye")) {
+                System.out.println("Byte you later! Hope to see you again soon! >.<");
+                break;
+            } else if (userInput.trim().isEmpty()) {
+                System.out.println("GiggleBytes is listening... type something!");
+            } else {
+                System.out.println("GiggleBytes heard: " + userInput);
+            }
+        }
+
+        scanner.close();
         System.out.println("------------------------------------------------------------------------------");
     }
 }
