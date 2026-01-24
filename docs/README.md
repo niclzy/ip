@@ -1,10 +1,6 @@
 # GiggleBytes User Guide
 
-// Update the title above to match the actual product name
-
-// Product screenshot goes here
-
-// Product intro goes here
+GiggleBytes is a interactive, task manager style chatbot that is still under development
 
 ## Adding deadlines
 
@@ -20,11 +16,12 @@ Example: `keyword (optional arguments)`
 expected output
 ```
 
-## Feature ABC
+## List
 
-// Feature details
+Command - 'List': To show all pending task(s), if any
 
 
-## Feature XYZ
 
-// Feature details
+## Bye
+
+Command - 'Bye' to exit and close GiggleBytes
