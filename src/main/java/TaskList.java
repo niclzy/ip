@@ -30,10 +30,6 @@ public class TaskList extends DisplayableCollection {
         return false;
     }
 
-    public boolean addTask(String description) {
-        return addTodo(description);
-    }
-
     public Task getTask(int index) {
         Displayable item = getItem(index);
         return (item instanceof Task) ? (Task) item : null;
