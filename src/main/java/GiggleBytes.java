@@ -24,6 +24,7 @@ public class GiggleBytes {
         System.out.println("  - List tasks: Type 'list'");
         System.out.println("  - Mark task as done: Type 'mark [number]'");
         System.out.println("  - Mark task as not done: Type 'unmark [number]'");
+        System.out.println("  - Delete task: Type 'delete [number]'");
         System.out.println("  - Exit: Type 'bye'");
         System.out.println("------------------------------------------------------------------------------");
 
@@ -56,6 +57,8 @@ public class GiggleBytes {
                     handleEventCommand(userInput, taskList);
                 } else if (userInput.isEmpty()) {
                     System.out.println("GiggleBytes is listening... type something!");
+                } else if (lowerInput.startsWith("delete")) {
+                    handleDeleteCommand(userInput, taskList);
                 } else {
                     throw new GiggleBytesException("I'm a bit confused! >.< I don't know what that means!");
                 }
@@ -194,6 +197,46 @@ public class GiggleBytes {
         } catch (StringIndexOutOfBoundsException e) {
             System.out.println("Please specify which task to " + actionText + "!");
             System.out.println("Format: '" + action + " [number]'");
+        }
+    }
+
+    private static void handleDeleteCommand(String userInput, TaskList taskList) throws GiggleBytesException {
+        String rest = userInput.substring(6).trim();
+        String action = "delete";
+        String actionText = "delete";
+
+        if (rest.isEmpty()) {
+            throw new GiggleBytesException("Please specify which task to " + actionText + "!\nFormat: '" + action + " [number]'");
+        }
+
+        try {
+            int taskNumber = Integer.parseInt(rest);
+
+            // First check if the list is empty
+            if (taskList.getItemCount() == 0) {
+                System.out.println("Your task list is empty! There's nothing to delete! ;-;");
+                return;
+            }
+
+            // Then check if the task number is valid
+            if (taskNumber < 1 || taskNumber > taskList.getItemCount()) {
+                System.out.println("Task number " + taskNumber + " doesn't exist! ;-;");
+                System.out.println("Please choose a number between 1 and " + taskList.getItemCount());
+                return;
+            }
+
+            Task task = taskList.deleteTask(taskNumber);
+
+            if (task != null) {
+                System.out.println("Noted. I've removed this task:");
+                System.out.println("  " + task);
+                System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
+            } else {
+                System.out.println("Could not delete task " + taskNumber + "! ;-;");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("That doesn't look like a valid number! >.<");
+            System.out.println("Please use the format: '" + action + " [number]'");
         }
     }
 

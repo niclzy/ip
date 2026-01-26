@@ -1,9 +1,12 @@
+import java.util.ArrayList;
+import java.util.List;
+
 abstract class DisplayableCollection {
-    protected Displayable[] items;
+    protected List<Displayable> items;
     protected int itemCount;
 
     public DisplayableCollection(int maxCapacity) {
-        this.items = new Displayable[maxCapacity];
+        this.items = new ArrayList<>(maxCapacity);
         this.itemCount = 0;
     }
 
@@ -13,7 +16,7 @@ abstract class DisplayableCollection {
 
     public Displayable getItem(int index) {
         if (index >= 1 && index <= itemCount) {
-            return items[index - 1];
+            return items.get(index - 1);
         }
         return null;
     }
@@ -26,8 +29,17 @@ abstract class DisplayableCollection {
 
         System.out.println("Here are your tasks:");
         for (int i = 0; i < itemCount; i++) {
-            System.out.println("  " + (i + 1) + ". " + items[i].getDisplayString());
+            System.out.println("  " + (i + 1) + ". " + items.get(i).getDisplayString());
         }
         System.out.println("Total tasks: " + itemCount);
+    }
+
+    public Displayable removeItem(int index) {
+        if (index >= 1 && index <= itemCount) {
+            Displayable removed = items.remove(index - 1);
+            itemCount--;
+            return removed;
+        }
+        return null;
     }
 }
