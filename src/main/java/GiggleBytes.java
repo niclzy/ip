@@ -37,132 +37,163 @@ public class GiggleBytes {
 
             String lowerInput = userInput.toLowerCase();
 
-            if (lowerInput.equals("bye")) {
-                System.out.println("Byte you later! Hope to see you again soon! >.<");
-                System.out.println("Tasks completed today: " + countCompletedTasks(taskList) + " >.<");
-                break;
-            } else if (lowerInput.equals("list")) {
-                taskList.printAllItems();
-            } else if (lowerInput.startsWith("mark ")) {
-                handleMarkCommand(userInput, taskList, true);
-            } else if (lowerInput.startsWith("unmark ")) {
-                handleMarkCommand(userInput, taskList, false);
-            } else if (lowerInput.startsWith("todo ")) {
-                handleTodoCommand(userInput, taskList);
-            } else if (lowerInput.startsWith("deadline ")) {
-                handleDeadlineCommand(userInput, taskList);
-            } else if (lowerInput.startsWith("event ")) {
-                handleEventCommand(userInput, taskList);
-            } else if (userInput.trim().isEmpty()) {
-                System.out.println("GiggleBytes is listening... type something!");
-            } else {
-                System.out.println("I don't understand that command! >.<");
-                System.out.println("Use 'todo', 'deadline', or 'event' to add tasks!");
+            try {
+                if (lowerInput.startsWith("bye")) {
+                    System.out.println("Byte you later! Hope to see you again soon! >.<");
+                    System.out.println("Tasks completed today: " + countCompletedTasks(taskList) + " >.<");
+                    break;
+                } else if (lowerInput.startsWith("list")) {
+                    taskList.printAllItems();
+                } else if (lowerInput.startsWith("mark")) {
+                    handleMarkCommand(userInput, taskList, true);
+                } else if (lowerInput.startsWith("unmark")) {
+                    handleMarkCommand(userInput, taskList, false);
+                } else if (lowerInput.startsWith("todo")) {
+                    handleTodoCommand(userInput, taskList);
+                } else if (lowerInput.startsWith("deadline")) {
+                    handleDeadlineCommand(userInput, taskList);
+                } else if (lowerInput.startsWith("event")) {
+                    handleEventCommand(userInput, taskList);
+                } else if (userInput.isEmpty()) {
+                    System.out.println("GiggleBytes is listening... type something!");
+                } else {
+                    throw new GiggleBytesException("I'm a bit confused! >.< I don't know what that means!");
+                }
+            } catch (GiggleBytesException e) {
+                System.out.println(e.getMessage());
             }
+
             System.out.println("------------------------------------------------------------------------------");
         }
         scanner.close();
     }
 
-    private static void handleTodoCommand(String userInput, TaskList taskList) {
-        String description = userInput.substring(5).trim();
+    private static void handleTodoCommand(String userInput, TaskList taskList) throws GiggleBytesException {
+        String description = userInput.substring(4).trim();
+
         if (description.isEmpty()) {
-            System.out.println("Please provide a description for your todo!");
-            return;
+            throw new GiggleBytesException("Oopsie! The description of a todo cannot be empty. ;-;");
         }
 
-        if (taskList.addTodo(description)) {
-            System.out.println("Got it. I've added this task:");
-            System.out.println("  " + taskList.getTask(taskList.getItemCount()));
-            System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
-        } else {
-            System.out.println("Task storage is full! Can't add more tasks. ;-;");
+        if (!taskList.addTodo(description)) {
+            throw new GiggleBytesException("Task storage is full! Can't add more tasks. ;-;");
         }
+
+        System.out.println("Got it. I've added this task:");
+        System.out.println("  " + taskList.getTask(taskList.getItemCount()));
+        System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
     }
 
-    private static void handleDeadlineCommand(String userInput, TaskList taskList) {
-        String rest = userInput.substring(9).trim();
+    private static void handleDeadlineCommand(String userInput, TaskList taskList) throws GiggleBytesException {
+        String rest = userInput.substring(8).trim();
+
+        if (rest.isEmpty()) {
+            throw new GiggleBytesException("Hmm... Please provide description and deadline!\nFormat: deadline [description] /by [date/time]");
+        }
+
         String[] parts = rest.split(" /by ");
 
         if (parts.length < 2) {
-            System.out.println("Please use the format: deadline [description] /by [date/time]");
-            return;
+            if (!rest.contains("/by")) {
+                throw new GiggleBytesException("Missing '/by' parameter!\nFormat: deadline [description] /by [date/time]");
+            } else {
+                throw new GiggleBytesException("Oops! Both description and deadline time are required!\nInvalid Format! Please use: deadline [description] /by [date/time]");
+            }
         }
 
         String description = parts[0].trim();
         String by = parts[1].trim();
 
-        if (description.isEmpty() || by.isEmpty()) {
-            System.out.println("Both description and deadline time are required!");
-            return;
+        if (!taskList.addDeadline(description, by)) {
+            throw new GiggleBytesException("Task storage is full! Can't add more tasks. ;-;");
         }
 
-        if (taskList.addDeadline(description, by)) {
-            System.out.println("Got it. I've added this task:");
-            System.out.println("  " + taskList.getTask(taskList.getItemCount()));
-            System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
-        } else {
-            System.out.println("Task storage is full! Can't add more tasks. ;-;");
-        }
+        System.out.println("Got it. I've added this task:");
+        System.out.println("  " + taskList.getTask(taskList.getItemCount()));
+        System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
     }
 
-    private static void handleEventCommand(String userInput, TaskList taskList) {
-        String rest = userInput.substring(6).trim();
+    private static void handleEventCommand(String userInput, TaskList taskList) throws GiggleBytesException {
+        String rest = userInput.substring(5).trim();
+
+        if (rest.isEmpty()) {
+            throw new GiggleBytesException("Hmm... Please use the format: event [description] /from [start] /to [end]");
+        }
+
+        if (rest.contains(" /to ") && rest.contains(" /from ") &&
+                rest.indexOf(" /to ") < rest.indexOf(" /from ")) {
+            throw new GiggleBytesException("/from must come before /to!\nFormat: event [description] /from [start] /to [end]");
+        }
+
         String[] parts = rest.split(" /from | /to ");
 
         if (parts.length < 3) {
-            System.out.println("Please use the format: event [description] /from [start] /to [end]");
-            return;
+            if (!rest.contains("/from") && !rest.contains("/to")) {
+                throw new GiggleBytesException("Missing both /from and /to parameters!\nFormat: event [description] /from [start] /to [end]");
+            } else if (!rest.contains("/from")) {
+                throw new GiggleBytesException("Missing /from parameter!\nFormat: event [description] /from [start] /to [end]");
+            } else if (!rest.contains("/to")) {
+                throw new GiggleBytesException("Missing /to parameter!\nFormat: event [description] /from [start] /to [end]");
+            } else {
+                throw new GiggleBytesException("Whoops! Description, start time, and end time are all required!\nInvalid format! Please use: event [description] /from [start] /to [end]");
+            }
         }
 
         String description = parts[0].trim();
         String from = parts[1].trim();
         String to = parts[2].trim();
 
-        if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
-            System.out.println("Description, start time, and end time are all required!");
-            return;
+        if (!taskList.addEvent(description, from, to)) {
+            throw new GiggleBytesException("Task storage is full! Can't add more tasks. ;-;");
         }
 
-        if (taskList.addEvent(description, from, to)) {
-            System.out.println("Got it. I've added this task:");
-            System.out.println("  " + taskList.getTask(taskList.getItemCount()));
-            System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
-        } else {
-            System.out.println("Task storage is full! Can't add more tasks. ;-;");
-        }
+        System.out.println("Got it. I've added this task:");
+        System.out.println("  " + taskList.getTask(taskList.getItemCount()));
+        System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
     }
 
-    private static void handleMarkCommand(String userInput, TaskList taskList, boolean markAsDone) {
+    private static void handleMarkCommand(String userInput, TaskList taskList, boolean markAsDone) throws GiggleBytesException {
+        String rest = markAsDone ? userInput.substring(4).trim() : userInput.substring(5).trim();
         String command = markAsDone ? "mark " : "unmark ";
         String action = markAsDone ? "mark" : "unmark";
+        String actionText = markAsDone ? "mark as done" : "mark as not done";
+
+        if (rest.isEmpty()) {
+            throw new GiggleBytesException("Please specify which task to " + actionText + "!\nFormat: '" + action + " [number]'");
+        }
 
         try {
             int taskNumber = Integer.parseInt(userInput.substring(command.length()).trim());
             Task task = taskList.getTask(taskNumber);
 
-            if (task != null) {
-                if (markAsDone) {
-                    if (!task.isDone()) {
-                        task.markAsDone();
-                        System.out.println("Nice! >.< I've marked this task as done:");
-                    } else {
-                        System.out.println("This task was already marked as done!  0-0");
-                    }
-                } else {
-                    if (task.isDone()) {
-                        task.markAsNotDone();
-                        System.out.println("OK ;-; , I've marked this task as not done yet:");
-                    } else {
-                        System.out.println("This task was already marked as not done! <.<");
-                    }
-                }
-                System.out.println("   " + task);
-            } else {
-                System.out.println("Invalid task number! Please choose between 1 and " + taskList.getItemCount());
+            if (task == null) {
+                System.out.println("Task number " + taskNumber + " doesn't exist! ;-;");
+                System.out.println("Please choose a number between 1 and " + taskList.getItemCount());
+                return;
             }
+
+            if (markAsDone) {
+                if (!task.isDone()) {
+                    task.markAsDone();
+                    System.out.println("Nice! >.< I've marked this task as done:");
+                } else {
+                    System.out.println("This task was already marked as done!  0-0");
+                }
+            } else {
+                if (task.isDone()) {
+                    task.markAsNotDone();
+                    System.out.println("OK ;-; , I've marked this task as not done yet:");
+                } else {
+                    System.out.println("This task was already marked as not done! <.<");
+                }
+            }
+            System.out.println("   " + task);
         } catch (NumberFormatException e) {
-            System.out.println("Please enter a valid task number! Format: '" + action + " [number]'");
+            System.out.println("That doesn't look like a valid number! >.<");
+            System.out.println("Please use the format: '" + action + " [number]'");
+        } catch (StringIndexOutOfBoundsException e) {
+            System.out.println("Please specify which task to " + actionText + "!");
+            System.out.println("Format: '" + action + " [number]'");
         }
     }
 
