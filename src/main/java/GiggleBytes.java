@@ -88,7 +88,7 @@ public class GiggleBytes {
         String description = userInput.substring(4).trim();
 
         if (description.isEmpty()) {
-            throw new GiggleBytesException("Oopsie! The description of a todo cannot be empty. ;-;");
+            throw new GiggleBytesException("Oopsies! The description of a todo cannot be empty. ;-;");
         }
 
         if (!taskList.addTodo(description)) {
