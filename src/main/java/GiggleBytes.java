@@ -14,7 +14,6 @@ public class GiggleBytes {
                 + "        \\/  /_____//_____/           \\/       \\/ \\/                \\/     \\/ \n";
         String cbName = "GiggleBytes";
         storage = new Storage();
-
         List<Task> loadedTasks = storage.loadTasks();
         taskList = new TaskList(100, loadedTasks);
 
