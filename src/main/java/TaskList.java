@@ -1,6 +1,16 @@
+import java.util.List;
+
 public class TaskList extends DisplayableCollection {
     public TaskList(int maxCapacity) {
         super(maxCapacity);
+    }
+
+    public TaskList(int maxCapacity, List<Task> loadedTasks) {
+        super(maxCapacity);
+        for (Task task : loadedTasks) {
+            items.add(task);
+            itemCount++;
+        }
     }
 
     public boolean addTodo(String description) {

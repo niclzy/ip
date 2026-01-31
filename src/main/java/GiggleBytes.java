@@ -1,6 +1,10 @@
 import java.util.Scanner;
+import java.util.List;
 
 public class GiggleBytes {
+    private static Storage storage;
+    private static TaskList taskList;
+
     public static void main(String[] args) {
         String logo = "  ________.__              .__        __________          __                 \n"
                 + " /  _____/|__| ____   ____ |  |   ____\\______   \\___.__._/  |_  ____   ______\n"
@@ -9,7 +13,10 @@ public class GiggleBytes {
                 + " \\______  /__\\___  /\\___  /|____/\\___  >______  // ____| |__|  \\___  >____  >\n"
                 + "        \\/  /_____//_____/           \\/       \\/ \\/                \\/     \\/ \n";
         String cbName = "GiggleBytes";
-        TaskList taskList = new TaskList(100);
+        storage = new Storage();
+
+        List<Task> loadedTasks = storage.loadTasks();
+        taskList = new TaskList(100, loadedTasks);
 
         System.out.println("------------------------------------------------------------------------------");
         System.out.println(logo);
@@ -42,23 +49,30 @@ public class GiggleBytes {
                 if (lowerInput.startsWith("bye")) {
                     System.out.println("Byte you later! Hope to see you again soon! >.<");
                     System.out.println("Tasks completed today: " + countCompletedTasks(taskList) + " >.<");
+                    storage.saveTasks(taskList);
                     break;
                 } else if (lowerInput.startsWith("list")) {
                     taskList.printAllItems();
                 } else if (lowerInput.startsWith("mark")) {
                     handleMarkCommand(userInput, taskList, true);
+                    storage.saveTasks(taskList);
                 } else if (lowerInput.startsWith("unmark")) {
                     handleMarkCommand(userInput, taskList, false);
+                    storage.saveTasks(taskList);
                 } else if (lowerInput.startsWith("todo")) {
                     handleTodoCommand(userInput, taskList);
+                    storage.saveTasks(taskList);
                 } else if (lowerInput.startsWith("deadline")) {
                     handleDeadlineCommand(userInput, taskList);
+                    storage.saveTasks(taskList);
                 } else if (lowerInput.startsWith("event")) {
                     handleEventCommand(userInput, taskList);
+                    storage.saveTasks(taskList);
                 } else if (userInput.isEmpty()) {
                     System.out.println("GiggleBytes is listening... type something!");
                 } else if (lowerInput.startsWith("delete")) {
                     handleDeleteCommand(userInput, taskList);
+                    storage.saveTasks(taskList);
                 } else {
                     throw new GiggleBytesException("I'm a bit confused! >.< I don't know what that means!");
                 }
