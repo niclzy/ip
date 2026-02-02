@@ -48,6 +48,7 @@ test {
 }
 
 jar {
+    archiveFileName = "gigglebytes.jar"
     manifest {
         attributes 'Main-Class': application.mainClass
     }
