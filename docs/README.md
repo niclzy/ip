@@ -1,13 +1,13 @@
-# GiggleBytes User Guide
+# gigglebytes.GiggleBytes User Guide
 
-GiggleBytes is a interactive, task manager style chatbot that is still under development
+gigglebytes.GiggleBytes is a interactive, task manager style chatbot that is still under development
 
 # Features
 All Features and Sub Features
 
-### Adding Different Task Types
+### Adding Different gigglebytes.task.Task Types
 
-#### Todo Tasks
+#### gigglebytes.task.Todo Tasks
 Adds a simple task without any date/time attached.
 
 **Command:** `todo [description]`
@@ -22,7 +22,7 @@ Now you have 1 tasks in the list.
 ------------------------------------------------------------------------------
 ```
 
-#### Deadline Tasks
+#### gigglebytes.task.Deadline Tasks
 Adds a task that needs to be done before a specific date/time.
 
 **Command:** `deadline [description] /by [date/time]`
@@ -38,7 +38,7 @@ Now you have 6 tasks in the list.
 ```
 
 
-#### Event Tasks
+#### gigglebytes.task.Event Tasks
 Adds a task that starts and ends at specific times.
 
 **Command:** `event [description] /from [start] /to [end]`
@@ -97,7 +97,7 @@ OK ;-; , I've marked this task as not done yet:
 ```
 
 ### Exiting
-**Command:** `exits and closes GiggleBytes, showing a summary of completed tasks.`
+**Command:** `exits and closes gigglebytes.GiggleBytes, showing a summary of completed tasks.`
 
 **Example:** `bye`
 ```

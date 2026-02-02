@@ -1,3 +1,7 @@
+package gigglebytes.task;
+
+import gigglebytes.util.Displayable;
+
 public abstract class Task implements Displayable {
     private final String description;
     private boolean isDone;
