@@ -283,4 +283,32 @@ public class ParserTest {
         });
         assertTrue(exception.getMessage().contains("must be positive"));
     }
+
+    @Test
+    public void testParseFindCommand() throws GiggleBytesException {
+        Command command = Parser.parse("find book");
+        assertInstanceOf(FindCommand.class, command);
+    }
+
+    @Test
+    public void testParseFindCommandEmpty() {
+        Exception exception = assertThrows(GiggleBytesException.class, () -> {
+            Parser.parse("find");
+        });
+        assertTrue(exception.getMessage().contains("Please specify a keyword"));
+    }
+
+    @Test
+    public void testParseFindCommandOnlySpaces() {
+        Exception exception = assertThrows(GiggleBytesException.class, () -> {
+            Parser.parse("find     ");
+        });
+        assertTrue(exception.getMessage().contains("Please specify a keyword"));
+    }
+
+    @Test
+    public void testParseFindCommandWithMultipleSpaces() throws GiggleBytesException {
+        Command command = Parser.parse("find    multiple words   ");
+        assertInstanceOf(FindCommand.class, command);
+    }
 }

@@ -49,6 +49,7 @@ public class Ui {
         System.out.println("  - Add Deadline: 'deadline [description] /by [date/time]'");
         System.out.println("  - Add Event: 'event [description] /from [start] /to [end]'");
         System.out.println("  - List tasks: Type 'list'");
+        System.out.println("  - Find tasks: Type 'find [keyword]'");
         System.out.println("  - Mark task as done: Type 'mark [number]'");
         System.out.println("  - Mark task as not done: Type 'unmark [number]'");
         System.out.println("  - Delete task: Type 'delete [number]'");
