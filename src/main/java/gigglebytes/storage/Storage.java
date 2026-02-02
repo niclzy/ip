@@ -26,7 +26,6 @@ public class Storage {
             .withResolverStyle(ResolverStyle.STRICT);
 
     public Storage() {
-        // Ensure data directory exists
         try {
             Files.createDirectories(Paths.get(DATA_DIR));
         } catch (IOException e) {
@@ -76,7 +75,8 @@ public class Storage {
         return tasks;
     }
 
-    private Task parseTask(String line) throws GiggleBytesException {
+    // Package Private
+    Task parseTask(String line) throws GiggleBytesException {
         try {
             String[] parts = line.split(" \\| ");
 
@@ -143,7 +143,8 @@ public class Storage {
         }
     }
 
-    private String taskToFileString(Task task) {
+    // Package Private
+    String taskToFileString(Task task) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(task.getTypeIcon()).append(" | ");
@@ -152,11 +153,9 @@ public class Storage {
 
         if (task instanceof Deadline) {
             Deadline deadline = (Deadline) task;
-            // Assuming Deadline stores date as String, not LocalDateTime
             sb.append(" | ").append(deadline.getBy());
         } else if (task instanceof Event) {
             Event event = (Event) task;
-            // Assuming Event stores dates as Strings, not LocalDateTime
             sb.append(" | ").append(event.getFrom());
             sb.append(" | ").append(event.getTo());
         }
