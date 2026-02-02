@@ -4,13 +4,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.time.format.ResolverStyle;
 
 public class Storage {
     private static final String DATA_DIR = "./data";
     private static final String DATA_FILE = "./data/gigglebytes.txt";
+    private static final DateTimeFormatter FILE_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
+            .withResolverStyle(ResolverStyle.STRICT);
 
     public Storage() {
         // Ensure data directory exists
@@ -85,15 +90,18 @@ public class Storage {
                     if (parts.length < 4) {
                         throw new GiggleBytesException("Deadline missing 'by' parameter: " + line);
                     }
-                    String by = parts[3].trim();
+                    String byString = parts[3].trim();
+                    LocalDateTime by = LocalDateTime.parse(byString, FILE_FORMAT);
                     task = new Deadline(description, by);
                     break;
                 case "E":
                     if (parts.length < 5) {
                         throw new GiggleBytesException("Event missing 'from' or 'to' parameter: " + line);
                     }
-                    String from = parts[3].trim();
-                    String to = parts[4].trim();
+                    String fromString = parts[3].trim();
+                    String toString = parts[4].trim();
+                    LocalDateTime from = LocalDateTime.parse(fromString, FILE_FORMAT);
+                    LocalDateTime to = LocalDateTime.parse(toString, FILE_FORMAT);
                     task = new Event(description, from, to);
                     break;
                 default:
@@ -134,41 +142,18 @@ public class Storage {
         StringBuilder sb = new StringBuilder();
 
         sb.append(task.getTypeIcon()).append(" | ");
-
         sb.append(task.isDone() ? "1" : "0").append(" | ");
-
         sb.append(task.getDescription());
 
         if (task instanceof Deadline) {
             Deadline deadline = (Deadline) task;
-            sb.append(" | ").append(getDeadlineBy(task));
+            sb.append(" | ").append(deadline.getBy().format(FILE_FORMAT));
         } else if (task instanceof Event) {
             Event event = (Event) task;
-            sb.append(" | ").append(getEventFrom(task));
-            sb.append(" | ").append(getEventTo(task));
+            sb.append(" | ").append(event.getFrom().format(FILE_FORMAT));
+            sb.append(" | ").append(event.getTo().format(FILE_FORMAT));
         }
 
         return sb.toString();
-    }
-
-    private String getDeadlineBy(Task task) {
-        if (task instanceof Deadline) {
-            return ((Deadline) task).getBy();
-        }
-        return "";
-    }
-
-    private String getEventFrom(Task task) {
-        if (task instanceof Event) {
-            return ((Event) task).getFrom();
-        }
-        return "";
-    }
-
-    private String getEventTo(Task task) {
-        if (task instanceof Event) {
-            return ((Event) task).getTo();
-        }
-        return "";
     }
 }

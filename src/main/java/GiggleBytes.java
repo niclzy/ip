@@ -1,5 +1,10 @@
 import java.util.Scanner;
 import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.time.LocalDateTime;
+
 
 public class GiggleBytes {
     private static Storage storage;
@@ -25,8 +30,8 @@ public class GiggleBytes {
         System.out.println("------------------------------------------------------------------------------");
         System.out.println("Available Commands (Non-Case Sensitive) : >.<");
         System.out.println("  - Add Todo: 'todo [description]'");
-        System.out.println("  - Add Deadline: 'deadline [description] /by [date/time]'");
-        System.out.println("  - Add Event: 'event [description] /from [start] /to [end]'");
+        System.out.println("  - Add Deadline: 'deadline [description] /by [yyyy-MM-dd HHmm]' (e.g., deadline submit report /by 2024-12-31 1800)");
+        System.out.println("  - Add Event: 'event [description] /from [yyyy-MM-dd HHmm] /to [yyyy-MM-dd HHmm]'");
         System.out.println("  - List tasks: Type 'list'");
         System.out.println("  - Mark task as done: Type 'mark [number]'");
         System.out.println("  - Mark task as not done: Type 'unmark [number]'");
@@ -104,54 +109,60 @@ public class GiggleBytes {
         String rest = userInput.substring(8).trim();
 
         if (rest.isEmpty()) {
-            throw new GiggleBytesException("Hmm... Please provide description and deadline!\nFormat: deadline [description] /by [date/time]");
+            throw new GiggleBytesException("Hmm... Please provide description and deadline!\nFormat: deadline [description] /by [yyyy-MM-dd HHmm] (e.g., 2024-12-31 1800)");
         }
 
         String[] parts = rest.split(" /by ");
 
         if (parts.length < 2) {
             if (!rest.contains("/by")) {
-                throw new GiggleBytesException("Missing '/by' parameter!\nFormat: deadline [description] /by [date/time]");
+                throw new GiggleBytesException("Missing '/by' parameter!\nFormat: deadline [description] /by [yyyy-MM-dd HHmm]");
             } else {
-                throw new GiggleBytesException("Oops! Both description and deadline time are required!\nInvalid Format! Please use: deadline [description] /by [date/time]");
+                throw new GiggleBytesException("Oops! Both description and deadline time are required!\nInvalid Format! Please use: deadline [description] /by [yyyy-MM-dd HHmm]");
             }
         }
 
         String description = parts[0].trim();
         String by = parts[1].trim();
 
-        if (!taskList.addDeadline(description, by)) {
-            throw new GiggleBytesException("Task storage is full! Can't add more tasks. ;-;");
-        }
+        try {
+            LocalDateTime dateTime = parseDateTime(by);
 
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + taskList.getTask(taskList.getItemCount()));
-        System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
+            if (!taskList.addDeadline(description, dateTime)) {
+                throw new GiggleBytesException("Task storage is full! Can't add more tasks. ;-;");
+            }
+
+            System.out.println("Got it. I've added this task:");
+            System.out.println("  " + taskList.getTask(taskList.getItemCount()));
+            System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
+        } catch (GiggleBytesException e) {
+            throw e;
+        }
     }
 
     private static void handleEventCommand(String userInput, TaskList taskList) throws GiggleBytesException {
         String rest = userInput.substring(5).trim();
 
         if (rest.isEmpty()) {
-            throw new GiggleBytesException("Hmm... Please use the format: event [description] /from [start] /to [end]");
+            throw new GiggleBytesException("Hmm... Please use the format: event [description] /from [yyyy-MM-dd HHmm] /to [yyyy-MM-dd HHmm]");
         }
 
         if (rest.contains(" /to ") && rest.contains(" /from ") &&
                 rest.indexOf(" /to ") < rest.indexOf(" /from ")) {
-            throw new GiggleBytesException("/from must come before /to!\nFormat: event [description] /from [start] /to [end]");
+            throw new GiggleBytesException("/from must come before /to!\nFormat: event [description] /from [yyyy-MM-dd HHmm] /to [yyyy-MM-dd HHmm]");
         }
 
         String[] parts = rest.split(" /from | /to ");
 
         if (parts.length < 3) {
             if (!rest.contains("/from") && !rest.contains("/to")) {
-                throw new GiggleBytesException("Missing both /from and /to parameters!\nFormat: event [description] /from [start] /to [end]");
+                throw new GiggleBytesException("Missing both /from and /to parameters!\nFormat: event [description] /from [yyyy-MM-dd HHmm] /to [yyyy-MM-dd HHmm]");
             } else if (!rest.contains("/from")) {
-                throw new GiggleBytesException("Missing /from parameter!\nFormat: event [description] /from [start] /to [end]");
+                throw new GiggleBytesException("Missing /from parameter!\nFormat: event [description] /from [yyyy-MM-dd HHmm] /to [yyyy-MM-dd HHmm]");
             } else if (!rest.contains("/to")) {
-                throw new GiggleBytesException("Missing /to parameter!\nFormat: event [description] /from [start] /to [end]");
+                throw new GiggleBytesException("Missing /to parameter!\nFormat: event [description] /from [yyyy-MM-dd HHmm] /to [yyyy-MM-dd HHmm]");
             } else {
-                throw new GiggleBytesException("Whoops! Description, start time, and end time are all required!\nInvalid format! Please use: event [description] /from [start] /to [end]");
+                throw new GiggleBytesException("Whoops! Description, start time, and end time are all required!\nInvalid format! Please use: event [description] /from [yyyy-MM-dd HHmm] /to [yyyy-MM-dd HHmm]");
             }
         }
 
@@ -159,13 +170,34 @@ public class GiggleBytes {
         String from = parts[1].trim();
         String to = parts[2].trim();
 
-        if (!taskList.addEvent(description, from, to)) {
-            throw new GiggleBytesException("Task storage is full! Can't add more tasks. ;-;");
-        }
+        try {
+            LocalDateTime fromDateTime = parseDateTime(from);
+            LocalDateTime toDateTime = parseDateTime(to);
 
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + taskList.getTask(taskList.getItemCount()));
-        System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
+            if (!fromDateTime.isBefore(toDateTime)) {
+                throw new GiggleBytesException("Start time must be before end time!");
+            }
+
+            if (!taskList.addEvent(description, fromDateTime, toDateTime)) {
+                throw new GiggleBytesException("Task storage is full! Can't add more tasks. ;-;");
+            }
+
+            System.out.println("Got it. I've added this task:");
+            System.out.println("  " + taskList.getTask(taskList.getItemCount()));
+            System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
+        } catch (GiggleBytesException e) {
+            throw e;
+        }
+    }
+
+    private static LocalDateTime parseDateTime(String dateTimeStr) throws GiggleBytesException {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
+                    .withResolverStyle(ResolverStyle.STRICT);
+            return LocalDateTime.parse(dateTimeStr, formatter);
+        } catch (DateTimeParseException e) {
+            throw new GiggleBytesException("Invalid date/time format! Please use: uuuu-MM-dd HHmm (e.g., 2024-12-31 1800)");
+        }
     }
 
     private static void handleMarkCommand(String userInput, TaskList taskList, boolean markAsDone) throws GiggleBytesException {
@@ -225,13 +257,11 @@ public class GiggleBytes {
         try {
             int taskNumber = Integer.parseInt(rest);
 
-            // First check if the list is empty
             if (taskList.getItemCount() == 0) {
                 System.out.println("Your task list is empty! There's nothing to delete! ;-;");
                 return;
             }
 
-            // Then check if the task number is valid
             if (taskNumber < 1 || taskNumber > taskList.getItemCount()) {
                 System.out.println("Task number " + taskNumber + " doesn't exist! ;-;");
                 System.out.println("Please choose a number between 1 and " + taskList.getItemCount());

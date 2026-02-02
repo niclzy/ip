@@ -1,3 +1,19 @@
 T | 1 | read book
-D | 0 | return book | June 6th
 T | 1 | join sports club
+D | 0 | Submit report | 2024-12-31 1800
+D | 0 | Buy milk | 2024-02-29 0900
+D | 0 | Year end party | 2024-12-31 2359
+D | 0 | Morning meeting | 2024-06-15 0800
+E | 0 | Team meeting | 2024-03-15 1400 | 2024-03-15 1600
+E | 0 | Conference | 2024-07-20 0900 | 2024-07-20 1700
+E | 0 | All day workshop | 2024-08-10 0900 | 2024-08-10 1800
+E | 0 | New Year party | 2024-12-31 2000 | 2025-01-01 0200
+D | 0 | Submit report | 2023-02-28 1800
+D | 0 | New Year | 2024-12-31 2359
+D | 0 | First minute | 2024-01-01 0000
+E | 0 | Short meeting | 2024-06-01 1200 | 2024-06-01 1201
+E | 0 | Year transition | 2024-12-31 2359 | 2025-01-01 0001
+D | 0 | Midnight deadline | 2024-01-01 0000
+D | 0 | Midnight deadline | 2024-01-01 0000
+D | 0 | Submit report | 2024-12-31 1800
+D | 0 | Submit report | 2023-02-28 1800

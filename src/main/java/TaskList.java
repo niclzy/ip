@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class TaskList extends DisplayableCollection {
@@ -19,16 +20,24 @@ public class TaskList extends DisplayableCollection {
         return true;
     }
 
-    public boolean addDeadline(String description, String by) {
+    public boolean addDeadline(String description, LocalDateTime by) {
         items.add(new Deadline(description, by));
         itemCount++;
         return true;
     }
 
-    public boolean addEvent(String description, String from, String to) {
+    public boolean addEvent(String description, LocalDateTime from, LocalDateTime to) {
         items.add(new Event(description, from, to));
         itemCount++;
         return true;
+    }
+
+    public boolean addDeadline(String description, String by) throws GiggleBytesException {
+        throw new GiggleBytesException("Please use the new date format: yyyy-MM-dd HHmm");
+    }
+
+    public boolean addEvent(String description, String from, String to) throws GiggleBytesException {
+        throw new GiggleBytesException("Please use the new date format: yyyy-MM-dd HHmm");
     }
 
     public Task getTask(int index) {
