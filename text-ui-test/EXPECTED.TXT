@@ -6,13 +6,13 @@
  \______  /__\___  /\___  /|____/\___  >______  // ____| |__|  \___  >____  >
         \/  /_____//_____/           \/       \/ \/                \/     \/ 
 ------------------------------------------------------------------------------
-Hello! o/ I'm GiggleBytes! Your personal digital task manager!
+Hello! o/ I'm gigglebytes.GiggleBytes! Your personal digital task manager!
 I can help you track and complete your tasks! >.<
 ------------------------------------------------------------------------------
 Available Commands (Non-Case Sensitive) : >.<
-  - Add Todo: 'todo [description]'
-  - Add Deadline: 'deadline [description] /by [date/time]'
-  - Add Event: 'event [description] /from [start] /to [end]'
+  - Add gigglebytes.task.Todo: 'todo [description]'
+  - Add gigglebytes.task.Deadline: 'deadline [description] /by [date/time]'
+  - Add gigglebytes.task.Event: 'event [description] /from [start] /to [end]'
   - List tasks: Type 'list'
   - Mark task as done: Type 'mark [number]'
   - Mark task as not done: Type 'unmark [number]'
