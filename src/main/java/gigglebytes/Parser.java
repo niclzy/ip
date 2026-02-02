@@ -6,6 +6,7 @@ import gigglebytes.command.AddTodoCommand;
 import gigglebytes.command.Command;
 import gigglebytes.command.DeleteCommand;
 import gigglebytes.command.ExitCommand;
+import gigglebytes.command.FindCommand;
 import gigglebytes.command.ListCommand;
 import gigglebytes.command.MarkCommand;
 import gigglebytes.exception.GiggleBytesException;
@@ -34,6 +35,8 @@ public class Parser {
             return new ExitCommand();
         } else if (lowerInput.startsWith("list")) {
             return new ListCommand();
+        } else if (lowerInput.startsWith("find")) {
+            return parseFindCommand(userInput);
         } else if (lowerInput.startsWith("mark")) {
             return parseMarkCommand(userInput, true);
         } else if (lowerInput.startsWith("unmark")) {
@@ -54,6 +57,27 @@ public class Parser {
     }
 
     /**
+     * Parses find commands.
+     *
+     * @param userInput The user input string starting with "find"
+     * @return A FindCommand object
+     * @throws GiggleBytesException If the keyword is missing
+     */
+    private static Command parseFindCommand(String userInput) throws GiggleBytesException {
+        if (userInput.length() <= 4) {
+            throw new GiggleBytesException("Please specify a keyword to search for!\nFormat: 'find [keyword]'");
+        }
+
+        String keyword = userInput.substring(4).trim();
+
+        if (keyword.isEmpty()) {
+            throw new GiggleBytesException("Please specify a keyword to search for!\nFormat: 'find [keyword]'");
+        }
+
+        return new FindCommand(keyword);
+    }
+
+    /**
      * Parses mark or unmark commands.
      *
      * @param userInput The user input string
@@ -68,28 +92,24 @@ public class Parser {
         // Make sure we have enough characters
         if (userInput.length() <= actionLength) {
             String actionText = markAsDone ? "mark as done" : "mark as not done";
-            throw new GiggleBytesException("Please specify which task to " + actionText + "!\n"
-                    + "Format: '" + action + " [number]'");
+            throw new GiggleBytesException("Please specify which task to " + actionText + "!\nFormat: '" + action + " [number]'");
         }
 
         String rest = userInput.substring(actionLength).trim();
         String actionText = markAsDone ? "mark as done" : "mark as not done";
 
         if (rest.isEmpty()) {
-            throw new GiggleBytesException("Please specify which task to " + actionText + "!\n"
-                    + "Format: '" + action + " [number]'");
+            throw new GiggleBytesException("Please specify which task to " + actionText + "!\nFormat: '" + action + " [number]'");
         }
 
         try {
             int taskNumber = Integer.parseInt(rest);
             if (taskNumber <= 0) {
-                throw new GiggleBytesException("Task number must be positive! >.<\n"
-                        + "Please use the format: '" + action + " [number]' where number is 1 or higher");
+                throw new GiggleBytesException("Task number must be positive! >.<\nPlease use the format: '" + action + " [number]' where number is 1 or higher");
             }
             return new MarkCommand(taskNumber, markAsDone);
         } catch (NumberFormatException e) {
-            throw new GiggleBytesException("That doesn't look like a valid number! >.<\n"
-                    + "Please use the format: '" + action + " [number]'");
+            throw new GiggleBytesException("That doesn't look like a valid number! >.<\nPlease use the format: '" + action + " [number]'");
         }
     }
 
@@ -123,26 +143,22 @@ public class Parser {
      */
     private static Command parseDeadlineCommand(String userInput) throws GiggleBytesException {
         if (userInput.length() <= 8) {
-            throw new GiggleBytesException("Hmm... Please provide description and deadline!\n"
-                    + "Format: deadline [description] /by [date/time]");
+            throw new GiggleBytesException("Hmm... Please provide description and deadline!\nFormat: deadline [description] /by [date/time]");
         }
 
         String rest = userInput.substring(8).trim();
 
         if (rest.isEmpty()) {
-            throw new GiggleBytesException("Hmm... Please provide description and deadline!\n"
-                    + "Format: deadline [description] /by [date/time]");
+            throw new GiggleBytesException("Hmm... Please provide description and deadline!\nFormat: deadline [description] /by [date/time]");
         }
 
         String[] parts = rest.split(" /by ");
 
         if (parts.length < 2) {
             if (!rest.contains("/by")) {
-                throw new GiggleBytesException("Missing '/by' parameter!\n"
-                        + "Format: deadline [description] /by [date/time]");
+                throw new GiggleBytesException("Missing '/by' parameter!\nFormat: deadline [description] /by [date/time]");
             } else {
-                throw new GiggleBytesException("Oops! Both description and deadline time are required!\n"
-                        + "Invalid Format! Please use: deadline [description] /by [date/time]");
+                throw new GiggleBytesException("Oops! Both description and deadline time are required!\nInvalid Format! Please use: deadline [description] /by [date/time]");
             }
         }
 
@@ -170,27 +186,22 @@ public class Parser {
             throw new GiggleBytesException("Hmm... Please use the format: event [description] /from [start] /to [end]");
         }
 
-        if (rest.contains(" /to ") && rest.contains(" /from ")
-                && rest.indexOf(" /to ") < rest.indexOf(" /from ")) {
-            throw new GiggleBytesException("/from must come before /to!\n"
-                    + "Format: event [description] /from [start] /to [end]");
+        if (rest.contains(" /to ") && rest.contains(" /from ") &&
+                rest.indexOf(" /to ") < rest.indexOf(" /from ")) {
+            throw new GiggleBytesException("/from must come before /to!\nFormat: event [description] /from [start] /to [end]");
         }
 
         String[] parts = rest.split(" /from | /to ");
 
         if (parts.length < 3) {
             if (!rest.contains("/from") && !rest.contains("/to")) {
-                throw new GiggleBytesException("Missing both /from and /to parameters!\n"
-                        + "Format: event [description] /from [start] /to [end]");
+                throw new GiggleBytesException("Missing both /from and /to parameters!\nFormat: event [description] /from [start] /to [end]");
             } else if (!rest.contains("/from")) {
-                throw new GiggleBytesException("Missing /from parameter!\n"
-                        + "Format: event [description] /from [start] /to [end]");
+                throw new GiggleBytesException("Missing /from parameter!\nFormat: event [description] /from [start] /to [end]");
             } else if (!rest.contains("/to")) {
-                throw new GiggleBytesException("Missing /to parameter!\n"
-                        + "Format: event [description] /from [start] /to [end]");
+                throw new GiggleBytesException("Missing /to parameter!\nFormat: event [description] /from [start] /to [end]");
             } else {
-                throw new GiggleBytesException("Whoops! Description, start time, and end time are all required!\n"
-                        + "Invalid format! Please use: event [description] /from [start] /to [end]");
+                throw new GiggleBytesException("Whoops! Description, start time, and end time are all required!\nInvalid format! Please use: event [description] /from [start] /to [end]");
             }
         }
 
@@ -222,13 +233,11 @@ public class Parser {
         try {
             int taskNumber = Integer.parseInt(rest);
             if (taskNumber <= 0) {
-                throw new GiggleBytesException("Task number must be positive! >.<\n"
-                        + "Please use the format: 'delete [number]' where number is 1 or higher");
+                throw new GiggleBytesException("Task number must be positive! >.<\nPlease use the format: 'delete [number]' where number is 1 or higher");
             }
             return new DeleteCommand(taskNumber);
         } catch (NumberFormatException e) {
-            throw new GiggleBytesException("That doesn't look like a valid number! >.<\n"
-                    + "Please use the format: 'delete [number]'");
+            throw new GiggleBytesException("That doesn't look like a valid number! >.<\nPlease use the format: 'delete [number]'");
         }
     }
 }
