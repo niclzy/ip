@@ -241,7 +241,7 @@ public class GiggleBytes {
             Task task = taskList.deleteTask(taskNumber);
 
             if (task != null) {
-                System.out.println("Noted. I've removed this task:");
+                System.out.println("Noted! I've removed this task:");
                 System.out.println("  " + task);
                 System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
             } else {
