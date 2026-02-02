@@ -96,21 +96,18 @@ public class Storage {
                     break;
                 case "D":
                     if (parts.length < 4) {
-                        throw new GiggleBytesException("gigglebytes.task.Deadline missing 'by' parameter: " + line);
+                        throw new GiggleBytesException("Deadline missing 'by' parameter: " + line);
                     }
                     String byString = parts[3].trim();
-                    LocalDateTime by = LocalDateTime.parse(byString, FILE_FORMAT);
-                    task = new Deadline(description, by);
+                    task = new Deadline(description, byString);
                     break;
                 case "E":
                     if (parts.length < 5) {
-                        throw new GiggleBytesException("gigglebytes.task.Event missing 'from' or 'to' parameter: " + line);
+                        throw new GiggleBytesException("Event missing 'from' or 'to' parameter: " + line);
                     }
                     String fromString = parts[3].trim();
                     String toString = parts[4].trim();
-                    LocalDateTime from = LocalDateTime.parse(fromString, FILE_FORMAT);
-                    LocalDateTime to = LocalDateTime.parse(toString, FILE_FORMAT);
-                    task = new Event(description, from, to);
+                    task = new Event(description, fromString, toString);
                     break;
                 default:
                     throw new GiggleBytesException("Unknown task type: " + type);
@@ -155,11 +152,13 @@ public class Storage {
 
         if (task instanceof Deadline) {
             Deadline deadline = (Deadline) task;
-            sb.append(" | ").append(deadline.getBy().format(FILE_FORMAT));
+            // Assuming Deadline stores date as String, not LocalDateTime
+            sb.append(" | ").append(deadline.getBy());
         } else if (task instanceof Event) {
             Event event = (Event) task;
-            sb.append(" | ").append(event.getFrom().format(FILE_FORMAT));
-            sb.append(" | ").append(event.getTo().format(FILE_FORMAT));
+            // Assuming Event stores dates as Strings, not LocalDateTime
+            sb.append(" | ").append(event.getFrom());
+            sb.append(" | ").append(event.getTo());
         }
 
         return sb.toString();

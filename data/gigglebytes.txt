@@ -16,4 +16,3 @@ E | 0 | Year transition | 2024-12-31 2359 | 2025-01-01 0001
 D | 0 | Midnight deadline | 2024-01-01 0000
 D | 0 | Midnight deadline | 2024-01-01 0000
 D | 0 | Submit report | 2024-12-31 1800
-D | 0 | Submit report | 2023-02-28 1800
