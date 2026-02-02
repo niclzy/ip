@@ -182,7 +182,7 @@ public class GiggleBytes {
                 throw new GiggleBytesException("Task storage is full! Can't add more tasks. ;-;");
             }
 
-            System.out.println("Got it. I've added this task:");
+            System.out.println("Got it! I've added this task:");
             System.out.println("  " + taskList.getTask(taskList.getItemCount()));
             System.out.println("Now you have " + taskList.getItemCount() + " tasks in the list.");
         } catch (GiggleBytesException e) {
