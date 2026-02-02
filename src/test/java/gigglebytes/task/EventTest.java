@@ -3,6 +3,12 @@ package gigglebytes.task;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link Event} class.
+ * <p>
+ * Tests event creation, time range handling, and display functionality.
+ * </p>
+ */
 public class EventTest {
 
     @Test

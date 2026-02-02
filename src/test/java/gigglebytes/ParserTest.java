@@ -5,6 +5,13 @@ import gigglebytes.exception.GiggleBytesException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link Parser} class.
+ * <p>
+ * Tests various command parsing scenarios including valid commands,
+ * edge cases, and error conditions.
+ * </p>
+ */
 public class ParserTest {
 
     @Test
