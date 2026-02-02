@@ -1,8 +1,16 @@
+package gigglebytes.storage;
+
+import gigglebytes.exception.GiggleBytesException;
+import gigglebytes.util.TaskList;
+import gigglebytes.task.Deadline;
+import gigglebytes.task.Event;
+import gigglebytes.task.Task;
+import gigglebytes.task.Todo;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,14 +91,14 @@ public class Storage {
                     break;
                 case "D":
                     if (parts.length < 4) {
-                        throw new GiggleBytesException("Deadline missing 'by' parameter: " + line);
+                        throw new GiggleBytesException("gigglebytes.task.Deadline missing 'by' parameter: " + line);
                     }
                     String by = parts[3].trim();
                     task = new Deadline(description, by);
                     break;
                 case "E":
                     if (parts.length < 5) {
-                        throw new GiggleBytesException("Event missing 'from' or 'to' parameter: " + line);
+                        throw new GiggleBytesException("gigglebytes.task.Event missing 'from' or 'to' parameter: " + line);
                     }
                     String from = parts[3].trim();
                     String to = parts[4].trim();

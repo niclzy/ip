@@ -1,3 +1,10 @@
+package gigglebytes;
+
+import gigglebytes.exception.GiggleBytesException;
+import gigglebytes.storage.Storage;
+import gigglebytes.task.Task;
+import gigglebytes.util.TaskList;
+
 import java.util.Scanner;
 import java.util.List;
 
@@ -12,7 +19,7 @@ public class GiggleBytes {
                 + "\\    \\_\\  \\  / /_/  > /_/  >  |_\\  ___/|    |   \\\\___  | |  | \\  ___/ \\___ \\ \n"
                 + " \\______  /__\\___  /\\___  /|____/\\___  >______  // ____| |__|  \\___  >____  >\n"
                 + "        \\/  /_____//_____/           \\/       \\/ \\/                \\/     \\/ \n";
-        String cbName = "GiggleBytes";
+        String cbName = "gigglebytes.GiggleBytes";
         storage = new Storage();
         List<Task> loadedTasks = storage.loadTasks();
         taskList = new TaskList(100, loadedTasks);
@@ -24,9 +31,9 @@ public class GiggleBytes {
         System.out.println("I can help you track and complete your tasks! >.<");
         System.out.println("------------------------------------------------------------------------------");
         System.out.println("Available Commands (Non-Case Sensitive) : >.<");
-        System.out.println("  - Add Todo: 'todo [description]'");
-        System.out.println("  - Add Deadline: 'deadline [description] /by [date/time]'");
-        System.out.println("  - Add Event: 'event [description] /from [start] /to [end]'");
+        System.out.println("  - Add gigglebytes.task.Todo: 'todo [description]'");
+        System.out.println("  - Add gigglebytes.task.Deadline: 'deadline [description] /by [date/time]'");
+        System.out.println("  - Add gigglebytes.task.Event: 'event [description] /from [start] /to [end]'");
         System.out.println("  - List tasks: Type 'list'");
         System.out.println("  - Mark task as done: Type 'mark [number]'");
         System.out.println("  - Mark task as not done: Type 'unmark [number]'");
@@ -68,7 +75,7 @@ public class GiggleBytes {
                     handleEventCommand(userInput, taskList);
                     storage.saveTasks(taskList);
                 } else if (userInput.isEmpty()) {
-                    System.out.println("GiggleBytes is listening... type something!");
+                    System.out.println("gigglebytes.GiggleBytes is listening... type something!");
                 } else if (lowerInput.startsWith("delete")) {
                     handleDeleteCommand(userInput, taskList);
                     storage.saveTasks(taskList);
@@ -92,7 +99,7 @@ public class GiggleBytes {
         }
 
         if (!taskList.addTodo(description)) {
-            throw new GiggleBytesException("Task storage is full! Can't add more tasks. ;-;");
+            throw new GiggleBytesException("gigglebytes.task.Task storage is full! Can't add more tasks. ;-;");
         }
 
         System.out.println("Got it. I've added this task:");
@@ -121,7 +128,7 @@ public class GiggleBytes {
         String by = parts[1].trim();
 
         if (!taskList.addDeadline(description, by)) {
-            throw new GiggleBytesException("Task storage is full! Can't add more tasks. ;-;");
+            throw new GiggleBytesException("gigglebytes.task.Task storage is full! Can't add more tasks. ;-;");
         }
 
         System.out.println("Got it. I've added this task:");
@@ -160,7 +167,7 @@ public class GiggleBytes {
         String to = parts[2].trim();
 
         if (!taskList.addEvent(description, from, to)) {
-            throw new GiggleBytesException("Task storage is full! Can't add more tasks. ;-;");
+            throw new GiggleBytesException("gigglebytes.task.Task storage is full! Can't add more tasks. ;-;");
         }
 
         System.out.println("Got it. I've added this task:");
@@ -183,7 +190,7 @@ public class GiggleBytes {
             Task task = taskList.getTask(taskNumber);
 
             if (task == null) {
-                System.out.println("Task number " + taskNumber + " doesn't exist! ;-;");
+                System.out.println("gigglebytes.task.Task number " + taskNumber + " doesn't exist! ;-;");
                 System.out.println("Please choose a number between 1 and " + taskList.getItemCount());
                 return;
             }
@@ -233,7 +240,7 @@ public class GiggleBytes {
 
             // Then check if the task number is valid
             if (taskNumber < 1 || taskNumber > taskList.getItemCount()) {
-                System.out.println("Task number " + taskNumber + " doesn't exist! ;-;");
+                System.out.println("gigglebytes.task.Task number " + taskNumber + " doesn't exist! ;-;");
                 System.out.println("Please choose a number between 1 and " + taskList.getItemCount());
                 return;
             }

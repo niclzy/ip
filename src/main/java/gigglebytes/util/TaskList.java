@@ -1,3 +1,10 @@
+package gigglebytes.util;
+
+import gigglebytes.task.Deadline;
+import gigglebytes.task.Event;
+import gigglebytes.task.Task;
+import gigglebytes.task.Todo;
+
 import java.util.List;
 
 public class TaskList extends DisplayableCollection {
