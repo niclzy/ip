@@ -3,6 +3,12 @@ package gigglebytes.task;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link Todo} class.
+ * <p>
+ * Tests todo creation, marking, and display functionality.
+ * </p>
+ */
 public class TodoTest {
 
     @Test

@@ -8,11 +8,23 @@ import gigglebytes.util.TaskList;
 
 import java.util.List;
 
+/**
+ * The main class for the GiggleBytes task management application.
+ * <p>
+ * GiggleBytes is a personal digital task manager that helps users
+ * track and complete their tasks. It supports todo tasks, deadlines,
+ * and events with a command-line interface.
+ * </p>
+ */
 public class GiggleBytes {
     private Storage storage;
     private TaskList taskList;
     private Ui ui;
 
+    /**
+     * Constructs a new GiggleBytes instance.
+     * Initializes the UI, storage, and loads existing tasks from file.
+     */
     public GiggleBytes() {
         ui = new Ui();
         storage = new Storage();
@@ -20,6 +32,13 @@ public class GiggleBytes {
         taskList = new TaskList(100, loadedTasks);
     }
 
+    /**
+     * Starts the GiggleBytes application.
+     * <p>
+     * Shows the welcome message, enters a command loop to process user input,
+     * and continues until the user issues an exit command.
+     * </p>
+     */
     public void run() {
         ui.showWelcome();
         boolean isExit = false;
@@ -43,6 +62,11 @@ public class GiggleBytes {
         ui.close();
     }
 
+    /**
+     * The main entry point for the GiggleBytes application.
+     *
+     * @param args Command line arguments (not used)
+     */
     public static void main(String[] args) {
         new GiggleBytes().run();
     }

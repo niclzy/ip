@@ -19,12 +19,23 @@ import java.util.List;
 import java.util.Scanner;
 import java.time.format.ResolverStyle;
 
+/**
+ * Handles loading and saving of tasks to persistent storage.
+ * <p>
+ * This class manages the file I/O operations for the GiggleBytes application,
+ * including reading tasks from a text file on startup and saving tasks
+ * to the file when the application exits.
+ * </p>
+ */
 public class Storage {
     private static final String DATA_DIR = "./data";
     private static final String DATA_FILE = "./data/gigglebytes.txt";
     private static final DateTimeFormatter FILE_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
 
+    /**
+     * Constructs a new Storage instance and creates the data directory if it doesn't exist.
+     */
     public Storage() {
         try {
             Files.createDirectories(Paths.get(DATA_DIR));
@@ -33,6 +44,15 @@ public class Storage {
         }
     }
 
+    /**
+     * Loads tasks from the data file.
+     * <p>
+     * If the data file doesn't exist, returns an empty list.
+     * Each line in the file represents one task in a specific format.
+     * </p>
+     *
+     * @return A list of tasks loaded from the file
+     */
     public List<Task> loadTasks() {
         List<Task> tasks = new ArrayList<>();
         File file = new File(DATA_FILE);
@@ -75,7 +95,22 @@ public class Storage {
         return tasks;
     }
 
-    // Package Private
+    /**
+     * Parses a single line from the data file into a Task object.
+     * <p>
+     * The expected format for each line is:
+     * <ul>
+     *   <li>Todo: T | 0/1 | description</li>
+     *   <li>Deadline: D | 0/1 | description | byDateTime</li>
+     *   <li>Event: E | 0/1 | description | fromDateTime | toDateTime</li>
+     * </ul>
+     * where 0 = not done, 1 = done.
+     * </p>
+     *
+     * @param line The line from the data file to parse
+     * @return The parsed Task object
+     * @throws GiggleBytesException If the line format is invalid
+     */
     Task parseTask(String line) throws GiggleBytesException {
         try {
             String[] parts = line.split(" \\| ");
@@ -124,6 +159,14 @@ public class Storage {
         }
     }
 
+    /**
+     * Saves all tasks in the task list to the data file.
+     * <p>
+     * Overwrites the existing file with the current state of all tasks.
+     * </p>
+     *
+     * @param taskList The TaskList containing tasks to save
+     */
     public void saveTasks(TaskList taskList) {
         try {
             FileWriter writer = new FileWriter(DATA_FILE);
@@ -143,7 +186,12 @@ public class Storage {
         }
     }
 
-    // Package Private
+    /**
+     * Converts a Task object to its string representation for file storage.
+     *
+     * @param task The Task to convert
+     * @return The string representation of the task for file storage
+     */
     String taskToFileString(Task task) {
         StringBuilder sb = new StringBuilder();
 

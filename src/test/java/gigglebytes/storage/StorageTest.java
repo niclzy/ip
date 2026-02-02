@@ -15,6 +15,13 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link Storage} class.
+ * <p>
+ * Tests file parsing, task serialization, and file I/O operations
+ * using temporary directories to avoid polluting the file system.
+ * </p>
+ */
 public class StorageTest {
 
     @TempDir

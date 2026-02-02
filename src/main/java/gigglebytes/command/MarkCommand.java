@@ -6,15 +6,32 @@ import gigglebytes.util.TaskList;
 import gigglebytes.Ui;
 import gigglebytes.task.Task;
 
+/**
+ * Represents a command to mark or unmark a task as done.
+ */
 public class MarkCommand extends Command {
     private int taskNumber;
     private boolean markAsDone;
 
+    /**
+     * Constructs a MarkCommand for the specified task number and action.
+     *
+     * @param taskNumber The 1-based index of the task to mark/unmark
+     * @param markAsDone true to mark as done, false to mark as not done
+     */
     public MarkCommand(int taskNumber, boolean markAsDone) {
         this.taskNumber = taskNumber;
         this.markAsDone = markAsDone;
     }
 
+    /**
+     * Executes the command by marking or unmarking the specified task.
+     *
+     * @param taskList The TaskList containing the task to modify
+     * @param ui The Ui to display messages to the user
+     * @param storage The Storage (not used in this command)
+     * @throws GiggleBytesException If an error occurs during execution
+     */
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage) throws GiggleBytesException {
         // First check if the list is empty

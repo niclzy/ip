@@ -3,8 +3,23 @@ package gigglebytes;
 import gigglebytes.command.*;
 import gigglebytes.exception.GiggleBytesException;
 
+/**
+ * Parses user input strings into corresponding Command objects.
+ * <p>
+ * This class is responsible for interpreting user commands and
+ * converting them into executable Command objects that can be
+ * processed by the application.
+ * </p>
+ */
 public class Parser {
 
+    /**
+     * Parses a user input string and returns the corresponding Command.
+     *
+     * @param userInput The raw input string from the user
+     * @return A Command object corresponding to the user's input
+     * @throws GiggleBytesException If the input is empty, invalid, or malformed
+     */
     public static Command parse(String userInput) throws GiggleBytesException {
         String lowerInput = userInput.toLowerCase().trim();
 
@@ -31,6 +46,14 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses mark or unmark commands.
+     *
+     * @param userInput The user input string
+     * @param markAsDone True for mark command, false for unmark command
+     * @return A MarkCommand object
+     * @throws GiggleBytesException If the task number is missing or invalid
+     */
     private static Command parseMarkCommand(String userInput, boolean markAsDone) throws GiggleBytesException {
         String action = markAsDone ? "mark" : "unmark";
         int actionLength = action.length();
@@ -59,6 +82,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses todo commands.
+     *
+     * @param userInput The user input string starting with "todo"
+     * @return An AddTodoCommand object
+     * @throws GiggleBytesException If the description is empty
+     */
     private static Command parseTodoCommand(String userInput) throws GiggleBytesException {
         if (userInput.length() <= 4) {
             throw new GiggleBytesException("Oopsies! The description of a todo cannot be empty. ;-;");
@@ -73,6 +103,13 @@ public class Parser {
         return new AddTodoCommand(description);
     }
 
+    /**
+     * Parses deadline commands.
+     *
+     * @param userInput The user input string starting with "deadline"
+     * @return An AddDeadlineCommand object
+     * @throws GiggleBytesException If the format is invalid or parameters are missing
+     */
     private static Command parseDeadlineCommand(String userInput) throws GiggleBytesException {
         if (userInput.length() <= 8) {
             throw new GiggleBytesException("Hmm... Please provide description and deadline!\nFormat: deadline [description] /by [date/time]");
@@ -100,6 +137,13 @@ public class Parser {
         return new AddDeadlineCommand(description, by);
     }
 
+    /**
+     * Parses event commands.
+     *
+     * @param userInput The user input string starting with "event"
+     * @return An AddEventCommand object
+     * @throws GiggleBytesException If the format is invalid or parameters are missing
+     */
     private static Command parseEventCommand(String userInput) throws GiggleBytesException {
         if (userInput.length() <= 5) {
             throw new GiggleBytesException("Hmm... Please use the format: event [description] /from [start] /to [end]");
@@ -137,6 +181,13 @@ public class Parser {
         return new AddEventCommand(description, from, to);
     }
 
+    /**
+     * Parses delete commands.
+     *
+     * @param userInput The user input string starting with "delete"
+     * @return A DeleteCommand object
+     * @throws GiggleBytesException If the task number is missing or invalid
+     */
     private static Command parseDeleteCommand(String userInput) throws GiggleBytesException {
         if (userInput.length() <= 6) {
             throw new GiggleBytesException("Please specify which task to delete!\nFormat: 'delete [number]'");

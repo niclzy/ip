@@ -10,6 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link TaskList} class.
+ * <p>
+ * Tests task addition, retrieval, deletion, and list management functionality.
+ * Includes tests for edge cases and error conditions.
+ * </p>
+ */
 public class TaskListTest {
 
     private TaskList taskList;
