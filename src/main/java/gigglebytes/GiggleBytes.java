@@ -13,7 +13,7 @@ import java.util.List;
  * <p>
  * GiggleBytes is a personal digital task manager that helps users
  * track and complete their tasks. It supports todo tasks, deadlines,
- * and events with a command-line interface.
+ * and events with a command-line interface and GUI.
  * </p>
  */
 public class GiggleBytes {
@@ -26,48 +26,40 @@ public class GiggleBytes {
      * Initializes the UI, storage, and loads existing tasks from file.
      */
     public GiggleBytes() {
-        ui = new Ui();
         storage = new Storage();
         List<Task> loadedTasks = storage.loadTasks();
         taskList = new TaskList(100, loadedTasks);
     }
 
     /**
-     * Starts the GiggleBytes application.
-     * <p>
-     * Shows the welcome message, enters a command loop to process user input,
-     * and continues until the user issues an exit command.
-     * </p>
+     * Gets a response from GiggleBytes for the user's input.
+     * This method is called by the GUI controller.
+     *
+     * @param input The user's input string
+     * @return The response from GiggleBytes
      */
-    public void run() {
-        ui.showWelcome();
-        boolean isExit = false;
+    public String getResponse(String input) {
+        try {
+            Command command = Parser.parse(input);
 
-        while (!isExit) {
-            try {
-                String userInput = ui.readCommand();
-                ui.showLine();
+            // For GUI, we need to capture output
+            GuiUi guiUi = new GuiUi();
+            command.execute(taskList, guiUi, storage);
 
-                Command command = Parser.parse(userInput);
-                command.execute(taskList, ui, storage);
-                isExit = command.isExit();
-
-            } catch (GiggleBytesException e) {
-                ui.showError(e.getMessage());
-            } finally {
-                ui.showLine();
+            if (command.isExit()) {
+                return guiUi.getOutput() + "\nGoodbye!";
             }
-        }
 
-        ui.close();
+            return guiUi.getOutput();
+        } catch (GiggleBytesException e) {
+            return e.getMessage();
+        }
     }
 
     /**
-     * The main entry point for the GiggleBytes application.
-     *
-     * @param args Command line arguments (not used)
+     * Saves tasks to storage.
      */
-    public static void main(String[] args) {
-        new GiggleBytes().run();
+    public void saveTasks() {
+        storage.saveTasks(taskList);
     }
 }
