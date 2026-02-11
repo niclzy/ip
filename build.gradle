@@ -2,29 +2,42 @@ plugins {
     id 'java'
     id 'application'
     id 'jacoco'
+    id 'checkstyle'
+    id 'org.openjfx.javafxplugin' version '0.0.13'  // ADD THIS
 }
 
 repositories {
     mavenCentral()
 }
 
+// ========== JAVAFX CONFIGURATION ==========
+javafx {
+    version = '17.0.6'
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
 dependencies {
     // JUnit dependencies
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
-
-    // Optional: For better assertions
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.0'
+
+    // JavaFX runtime for CI
+    testImplementation "org.openjfx:javafx-controls:17.0.6"
+    testImplementation "org.openjfx:javafx-fxml:17.0.6"
 }
 
 application {
-    mainClass = 'gigglebytes.GiggleBytes'
+    mainClass = 'gigglebytes.ui.Launcher'  // CHANGE THIS
 }
 
 sourceSets {
     main {
         java {
             srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
         }
     }
     test {
@@ -47,8 +60,31 @@ test {
     }
 }
 
+// ========== CHECKSTYLE CONFIGURATION ==========
+checkstyle {
+    toolVersion = '10.12.5'
+    configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
+    configProperties = [
+            'org.checkstyle.sun.suppressionfilter.config': "${project.rootDir}/config/checkstyle/suppressions.xml"
+    ]
+    ignoreFailures = false
+    showViolations = true
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required = false
+        html.required = true
+        html.stylesheet resources.text.fromFile("${project.rootDir}/config/checkstyle/checkstyle-styles.xsl")
+    }
+}
+
+test {
+    dependsOn checkstyleMain
+    dependsOn checkstyleTest
+}
+
 jar {
-    archiveFileName = "gigglebytes.jar"
     manifest {
         attributes 'Main-Class': application.mainClass
     }
