@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
@@ -21,6 +22,8 @@ public class MainWindow extends AnchorPane {
     private TextField userInput;
     @FXML
     private Button sendButton;
+    @FXML
+    private ImageView backgroundImage;
 
     private GiggleBytes giggleBytes;
 
@@ -30,6 +33,30 @@ public class MainWindow extends AnchorPane {
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+
+        scrollPane.setFitToWidth(true);
+        dialogContainer.setFillWidth(true);
+
+        try {
+            Image bgImage = new Image(getClass().getResourceAsStream("/images/GiggleBytesBackground.png"));
+            backgroundImage.setImage(bgImage);
+
+            javafx.application.Platform.runLater(() -> {
+                if (backgroundImage.getScene() != null) {
+                    backgroundImage.fitWidthProperty().bind(
+                            backgroundImage.getScene().widthProperty()
+                    );
+                    backgroundImage.fitHeightProperty().bind(
+                            backgroundImage.getScene().heightProperty()
+                    );
+                }
+            });
+
+        } catch (Exception e) {
+            System.out.println("Background image not found, using default");
+            backgroundImage.setImage(null);
+            backgroundImage.setStyle("-fx-background-color: #2b2b2b;");
+        }
     }
 
     /**
@@ -53,7 +80,7 @@ public class MainWindow extends AnchorPane {
                 + "  event [description] /from [start] /to [end]\n"
                 + "  list\n"
                 + "  find [keyword]\n"
-                + "  sort [date|description|status|type]\n"  // ADD THIS LINE
+                + "  sort [date|description|status|type]\n"
                 + "  mark [number]\n"
                 + "  unmark [number]\n"
                 + "  delete [number]\n"
@@ -71,7 +98,6 @@ public class MainWindow extends AnchorPane {
     private void handleUserInput() {
         String input = userInput.getText();
 
-        // Don't process empty input
         if (input.trim().isEmpty()) {
             userInput.clear();
             return;

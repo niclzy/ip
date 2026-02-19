@@ -8,7 +8,6 @@
 <fx:root alignment="TOP_RIGHT"
          maxHeight="1.7976931348623157E308"
          maxWidth="1.7976931348623157E308"
-         prefWidth="400.0"
          spacing="10.0"
          type="javafx.scene.layout.HBox"
          xmlns="http://javafx.com/javafx/17"
@@ -17,8 +16,10 @@
         <Label fx:id="dialog"
                text="Label"
                wrapText="true"
-               style="-fx-background-color: #E8E8E8; -fx-padding: 10; -fx-background-radius: 10;"
-               minHeight="-Infinity"/>
+               style="-fx-background-color: rgba(0, 0, 0, 0.85); -fx-text-fill: white; -fx-padding: 10; -fx-background-radius: 10;"
+               textFill="white"
+               minHeight="-Infinity"
+               maxWidth="400.0" />
         <ImageView fx:id="displayPicture"
                    fitHeight="100.0"
                    fitWidth="100.0"

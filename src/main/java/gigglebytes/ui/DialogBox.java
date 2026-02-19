@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 /**
  * Represents a dialog box consisting of an ImageView to represent the speaker's face
@@ -50,25 +51,41 @@ public class DialogBox extends HBox {
 
     /**
      * Creates a dialog box for user messages.
+     * Image on right, text on left (right-aligned)
      *
      * @param text The message text
      * @param img The user's profile image
      * @return A DialogBox for the user
      */
     public static DialogBox getUserDialog(String text, Image img) {
-        return new DialogBox(text, img);
+        DialogBox db = new DialogBox(text, img);
+
+        db.setMaxWidth(Double.MAX_VALUE);
+
+        db.setAlignment(Pos.TOP_RIGHT);
+
+        HBox spacer = new HBox();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        db.getChildren().clear();
+        db.getChildren().addAll(spacer, db.dialog, db.displayPicture);
+
+        return db;
     }
 
     /**
      * Creates a dialog box for GiggleBytes messages.
+     * Image on left, text on right (left-aligned)
      *
      * @param text The message text
      * @param img GiggleBytes' profile image
      * @return A DialogBox for GiggleBytes
      */
     public static DialogBox getGiggleBytesDialog(String text, Image img) {
-        var db = new DialogBox(text, img);
-        db.flip();
+        DialogBox db = new DialogBox(text, img);
+        db.setAlignment(Pos.TOP_LEFT);
+        db.getChildren().clear();
+        db.getChildren().addAll(db.displayPicture, db.dialog);
         return db;
     }
 }
