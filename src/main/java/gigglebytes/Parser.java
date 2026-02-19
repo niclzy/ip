@@ -10,16 +10,21 @@ import gigglebytes.command.FindCommand;
 import gigglebytes.command.ListCommand;
 import gigglebytes.command.MarkCommand;
 import gigglebytes.exception.GiggleBytesException;
+import gigglebytes.util.Messages;
+
+import static gigglebytes.command.CommandWords.*;
 
 /**
  * Parses user input strings into corresponding Command objects.
- * <p>
- * This class is responsible for interpreting user commands and
- * converting them into executable Command objects that can be
- * processed by the application.
- * </p>
  */
 public class Parser {
+    private static final int TODO_PREFIX_LENGTH = 4;
+    private static final int DEADLINE_PREFIX_LENGTH = 8;
+    private static final int EVENT_PREFIX_LENGTH = 5;
+    private static final int FIND_PREFIX_LENGTH = 4;
+    private static final int MARK_PREFIX_LENGTH = 4;
+    private static final int UNMARK_PREFIX_LENGTH = 6;
+    private static final int DELETE_PREFIX_LENGTH = 6;
 
     /**
      * Parses a user input string and returns the corresponding Command.
@@ -33,145 +38,116 @@ public class Parser {
 
         String lowerInput = userInput.toLowerCase().trim();
 
-        if (lowerInput.startsWith("bye")) {
+        if (lowerInput.startsWith(BYE)) {
             return new ExitCommand();
-        } else if (lowerInput.startsWith("list")) {
+        } else if (lowerInput.startsWith(LIST)) {
             return new ListCommand();
-        } else if (lowerInput.startsWith("find")) {
+        } else if (lowerInput.startsWith(FIND)) {
             return parseFindCommand(userInput);
-        } else if (lowerInput.startsWith("mark")) {
+        } else if (lowerInput.startsWith(MARK)) {
             return parseMarkCommand(userInput, true);
-        } else if (lowerInput.startsWith("unmark")) {
+        } else if (lowerInput.startsWith(UNMARK)) {
             return parseMarkCommand(userInput, false);
-        } else if (lowerInput.startsWith("todo")) {
+        } else if (lowerInput.startsWith(TODO)) {
             return parseTodoCommand(userInput);
-        } else if (lowerInput.startsWith("deadline")) {
+        } else if (lowerInput.startsWith(DEADLINE)) {
             return parseDeadlineCommand(userInput);
-        } else if (lowerInput.startsWith("event")) {
+        } else if (lowerInput.startsWith(EVENT)) {
             return parseEventCommand(userInput);
-        } else if (lowerInput.startsWith("delete")) {
+        } else if (lowerInput.startsWith(DELETE)) {
             return parseDeleteCommand(userInput);
         } else if (userInput.isEmpty()) {
-            throw new GiggleBytesException("GiggleBytes is listening... type something!");
+            throw new GiggleBytesException(Messages.EMPTY_INPUT);
         } else {
-            throw new GiggleBytesException("I'm a bit confused! >.< I don't know what that means!");
+            throw new GiggleBytesException(Messages.UNKNOWN_COMMAND);
         }
     }
 
-    /**
-     * Parses find commands.
-     *
-     * @param userInput The user input string starting with "find"
-     * @return A FindCommand object
-     * @throws GiggleBytesException If the keyword is missing
-     */
     private static Command parseFindCommand(String userInput) throws GiggleBytesException {
         assert userInput != null : "User input cannot be null";
 
-        if (userInput.length() <= 4) {
-            throw new GiggleBytesException("Please specify a keyword to search for!\nFormat: 'find [keyword]'");
+        if (userInput.length() <= FIND_PREFIX_LENGTH) {
+            throw new GiggleBytesException(Messages.MISSING_KEYWORD);
         }
 
-        String keyword = userInput.substring(4).trim();
+        String keyword = userInput.substring(FIND_PREFIX_LENGTH).trim();
 
         if (keyword.isEmpty()) {
-            throw new GiggleBytesException("Please specify a keyword to search for!\nFormat: 'find [keyword]'");
+            throw new GiggleBytesException(Messages.MISSING_KEYWORD);
         }
 
         assert !keyword.isEmpty() : "Keyword should not be empty after validation";
         return new FindCommand(keyword);
     }
 
-    /**
-     * Parses mark or unmark commands.
-     *
-     * @param userInput The user input string
-     * @param markAsDone True for mark command, false for unmark command
-     * @return A MarkCommand object
-     * @throws GiggleBytesException If the task number is missing or invalid
-     */
-    private static Command parseMarkCommand(String userInput, boolean markAsDone) throws GiggleBytesException {
+    private static Command parseMarkCommand(String userInput, boolean isMarkAsDone) throws GiggleBytesException {
         assert userInput != null : "User input cannot be null";
 
-        String action = markAsDone ? "mark" : "unmark";
-        int actionLength = action.length();
+        int prefixLength = isMarkAsDone ? MARK_PREFIX_LENGTH : UNMARK_PREFIX_LENGTH;
+        String action = isMarkAsDone ? MARK : UNMARK;
 
-        if (userInput.length() <= actionLength) {
-            String actionText = markAsDone ? "mark as done" : "mark as not done";
-            throw new GiggleBytesException("Please specify which task to " + actionText + "!\nFormat: '" + action + " [number]'");
+        if (userInput.length() <= prefixLength) {
+            String actionText = isMarkAsDone ? "mark as done" : "mark as not done";
+            throw new GiggleBytesException(String.format(Messages.MISSING_TASK_NUMBER, actionText, action));
         }
 
-        String rest = userInput.substring(actionLength).trim();
-        String actionText = markAsDone ? "mark as done" : "mark as not done";
+        String rest = userInput.substring(prefixLength).trim();
 
         if (rest.isEmpty()) {
-            throw new GiggleBytesException("Please specify which task to " + actionText + "!\nFormat: '" + action + " [number]'");
+            String actionText = isMarkAsDone ? "mark as done" : "mark as not done";
+            throw new GiggleBytesException(String.format(Messages.MISSING_TASK_NUMBER, actionText, action));
         }
 
         try {
             int taskNumber = Integer.parseInt(rest);
             if (taskNumber <= 0) {
-                throw new GiggleBytesException("Task number must be positive! >.<\nPlease use the format: '" + action + " [number]' where number is 1 or higher");
+                throw new GiggleBytesException(String.format(Messages.TASK_NUMBER_POSITIVE, action));
             }
 
             assert taskNumber > 0 : "Task number should be positive after validation";
-            return new MarkCommand(taskNumber, markAsDone);
+            return new MarkCommand(taskNumber, isMarkAsDone);
         } catch (NumberFormatException e) {
-            throw new GiggleBytesException("That doesn't look like a valid number! >.<\nPlease use the format: '" + action + " [number]'");
+            throw new GiggleBytesException(String.format(Messages.INVALID_NUMBER, action));
         }
     }
 
-    /**
-     * Parses todo commands.
-     *
-     * @param userInput The user input string starting with "todo"
-     * @return An AddTodoCommand object
-     * @throws GiggleBytesException If the description is empty
-     */
     private static Command parseTodoCommand(String userInput) throws GiggleBytesException {
         assert userInput != null : "User input cannot be null";
 
-        if (userInput.length() <= 4) {
-            throw new GiggleBytesException("Oopsies! The description of a todo cannot be empty. ;-;");
+        if (userInput.length() <= TODO_PREFIX_LENGTH) {
+            throw new GiggleBytesException(Messages.TODO_EMPTY);
         }
 
-        String description = userInput.substring(4).trim();
+        String description = userInput.substring(TODO_PREFIX_LENGTH).trim();
 
         if (description.isEmpty()) {
-            throw new GiggleBytesException("Oopsies! The description of a todo cannot be empty. ;-;");
+            throw new GiggleBytesException(Messages.TODO_EMPTY);
         }
 
         assert !description.isEmpty() : "Description should not be empty after validation";
         return new AddTodoCommand(description);
     }
 
-    /**
-     * Parses deadline commands.
-     *
-     * @param userInput The user input string starting with "deadline"
-     * @return An AddDeadlineCommand object
-     * @throws GiggleBytesException If the format is invalid or parameters are missing
-     */
     private static Command parseDeadlineCommand(String userInput) throws GiggleBytesException {
         assert userInput != null : "User input cannot be null";
 
-        if (userInput.length() <= 8) {
-            throw new GiggleBytesException("Hmm... Please provide description and deadline!\nFormat: deadline [description] /by [date/time]");
+        if (userInput.length() <= DEADLINE_PREFIX_LENGTH) {
+            throw new GiggleBytesException(Messages.MISSING_DEADLINE_FORMAT);
         }
 
-        String rest = userInput.substring(8).trim();
+        String rest = userInput.substring(DEADLINE_PREFIX_LENGTH).trim();
 
         if (rest.isEmpty()) {
-            throw new GiggleBytesException("Hmm... Please provide description and deadline!\nFormat: deadline [description] /by [date/time]");
+            throw new GiggleBytesException(Messages.MISSING_DEADLINE_FORMAT);
         }
 
         String[] parts = rest.split(" /by ");
 
         if (parts.length < 2) {
             if (!rest.contains("/by")) {
-                throw new GiggleBytesException("Missing '/by' parameter!\nFormat: deadline [description] /by [date/time]");
+                throw new GiggleBytesException(Messages.MISSING_DEADLINE_BY);
             } else {
-                throw new GiggleBytesException("Oops! Both description and deadline time are required!\nInvalid Format! Please use: deadline [description] /by [date/time]");
+                throw new GiggleBytesException(Messages.INVALID_DEADLINE_FORMAT);
             }
         }
 
@@ -184,45 +160,56 @@ public class Parser {
         return new AddDeadlineCommand(description, by);
     }
 
-    /**
-     * Parses event commands.
-     *
-     * @param userInput The user input string starting with "event"
-     * @return An AddEventCommand object
-     * @throws GiggleBytesException If the format is invalid or parameters are missing
-     */
     private static Command parseEventCommand(String userInput) throws GiggleBytesException {
         assert userInput != null : "User input cannot be null";
 
-        if (userInput.length() <= 5) {
-            throw new GiggleBytesException("Hmm... Please use the format: event [description] /from [start] /to [end]");
+        String rest = validateEventInput(userInput);
+        validateEventOrder(rest);
+        String[] parts = extractEventParts(rest);
+
+        return createEventCommand(parts);
+    }
+
+    private static String validateEventInput(String userInput) throws GiggleBytesException {
+        if (userInput.length() <= EVENT_PREFIX_LENGTH) {
+            throw new GiggleBytesException(Messages.MISSING_EVENT_FORMAT);
         }
-
-        String rest = userInput.substring(5).trim();
-
+        String rest = userInput.substring(EVENT_PREFIX_LENGTH).trim();
         if (rest.isEmpty()) {
-            throw new GiggleBytesException("Hmm... Please use the format: event [description] /from [start] /to [end]");
+            throw new GiggleBytesException(Messages.MISSING_EVENT_FORMAT);
         }
+        return rest;
+    }
 
+    private static void validateEventOrder(String rest) throws GiggleBytesException {
         if (rest.contains(" /to ") && rest.contains(" /from ") &&
                 rest.indexOf(" /to ") < rest.indexOf(" /from ")) {
-            throw new GiggleBytesException("/from must come before /to!\nFormat: event [description] /from [start] /to [end]");
+            throw new GiggleBytesException(Messages.EVENT_ORDER_ERROR);
         }
+    }
 
+    private static String[] extractEventParts(String rest) throws GiggleBytesException {
         String[] parts = rest.split(" /from | /to ");
-
         if (parts.length < 3) {
-            if (!rest.contains("/from") && !rest.contains("/to")) {
-                throw new GiggleBytesException("Missing both /from and /to parameters!\nFormat: event [description] /from [start] /to [end]");
-            } else if (!rest.contains("/from")) {
-                throw new GiggleBytesException("Missing /from parameter!\nFormat: event [description] /from [start] /to [end]");
-            } else if (!rest.contains("/to")) {
-                throw new GiggleBytesException("Missing /to parameter!\nFormat: event [description] /from [start] /to [end]");
-            } else {
-                throw new GiggleBytesException("Whoops! Description, start time, and end time are all required!\nInvalid format! Please use: event [description] /from [start] /to [end]");
-            }
+            String error = getEventErrorMessage(rest);
+            throw new GiggleBytesException(error);
         }
+        return parts;
+    }
 
+    private static String getEventErrorMessage(String rest) {
+        if (!rest.contains("/from") && !rest.contains("/to")) {
+            return Messages.MISSING_EVENT_BOTH;
+        } else if (!rest.contains("/from")) {
+            return Messages.MISSING_EVENT_FROM;
+        } else if (!rest.contains("/to")) {
+            return Messages.MISSING_EVENT_TO;
+        } else {
+            return Messages.INVALID_EVENT_FORMAT;
+        }
+    }
+
+    private static Command createEventCommand(String[] parts) {
         String description = parts[0].trim();
         String from = parts[1].trim();
         String to = parts[2].trim();
@@ -234,36 +221,29 @@ public class Parser {
         return new AddEventCommand(description, from, to);
     }
 
-    /**
-     * Parses delete commands.
-     *
-     * @param userInput The user input string starting with "delete"
-     * @return A DeleteCommand object
-     * @throws GiggleBytesException If the task number is missing or invalid
-     */
     private static Command parseDeleteCommand(String userInput) throws GiggleBytesException {
         assert userInput != null : "User input cannot be null";
 
-        if (userInput.length() <= 6) {
-            throw new GiggleBytesException("Please specify which task to delete!\nFormat: 'delete [number]'");
+        if (userInput.length() <= DELETE_PREFIX_LENGTH) {
+            throw new GiggleBytesException(String.format(Messages.MISSING_TASK_NUMBER, "delete", DELETE));
         }
 
-        String rest = userInput.substring(6).trim();
+        String rest = userInput.substring(DELETE_PREFIX_LENGTH).trim();
 
         if (rest.isEmpty()) {
-            throw new GiggleBytesException("Please specify which task to delete!\nFormat: 'delete [number]'");
+            throw new GiggleBytesException(String.format(Messages.MISSING_TASK_NUMBER, "delete", DELETE));
         }
 
         try {
             int taskNumber = Integer.parseInt(rest);
             if (taskNumber <= 0) {
-                throw new GiggleBytesException("Task number must be positive! >.<\nPlease use the format: 'delete [number]' where number is 1 or higher");
+                throw new GiggleBytesException(String.format(Messages.TASK_NUMBER_POSITIVE, DELETE));
             }
 
             assert taskNumber > 0 : "Task number should be positive after validation";
             return new DeleteCommand(taskNumber);
         } catch (NumberFormatException e) {
-            throw new GiggleBytesException("That doesn't look like a valid number! >.<\nPlease use the format: 'delete [number]'");
+            throw new GiggleBytesException(String.format(Messages.INVALID_NUMBER, DELETE));
         }
     }
 }

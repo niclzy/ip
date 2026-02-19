@@ -6,31 +6,18 @@ import gigglebytes.task.Deadline;
 import gigglebytes.task.Event;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Manages a collection of tasks in the GiggleBytes application.
- * <p>
- * This class extends DisplayableCollection and provides specific
- * methods for adding, retrieving, and deleting tasks.
- * </p>
  */
 public class TaskList extends DisplayableCollection {
-    /**
-     * Constructs a new empty TaskList with the specified maximum capacity.
-     *
-     * @param maxCapacity The maximum number of tasks the list can hold
-     */
+
     public TaskList(int maxCapacity) {
         super(maxCapacity);
         assert maxCapacity > 0 : "Max capacity must be positive";
     }
 
-    /**
-     * Constructs a new TaskList with pre-loaded tasks.
-     *
-     * @param maxCapacity The maximum number of tasks the list can hold
-     * @param loadedTasks A list of tasks to initialize the TaskList with
-     */
     public TaskList(int maxCapacity, List<Task> loadedTasks) {
         super(maxCapacity);
         assert maxCapacity > 0 : "Max capacity must be positive";
@@ -44,12 +31,6 @@ public class TaskList extends DisplayableCollection {
         assert itemCount == loadedTasks.size() : "Item count should match loaded tasks size";
     }
 
-    /**
-     * Adds a new todo task to the list.
-     *
-     * @param description The description of the todo
-     * @return true if the todo was added successfully
-     */
     public boolean addTodo(String description) {
         assert description != null : "Todo description cannot be null";
         assert !description.trim().isEmpty() : "Todo description cannot be empty";
@@ -57,17 +38,10 @@ public class TaskList extends DisplayableCollection {
         items.add(new Todo(description));
         itemCount++;
 
-        assert getTask(itemCount) != null : "Task should be added successfully";
+        assert getTask(itemCount).isPresent() : "Task should be added successfully";
         return true;
     }
 
-    /**
-     * Adds a new deadline task to the list.
-     *
-     * @param description The description of the deadline
-     * @param by The due date/time of the deadline
-     * @return true if the deadline was added successfully
-     */
     public boolean addDeadline(String description, String by) {
         assert description != null : "Deadline description cannot be null";
         assert by != null : "Deadline by date cannot be null";
@@ -77,20 +51,11 @@ public class TaskList extends DisplayableCollection {
         items.add(new Deadline(description, by));
         itemCount++;
 
-        Task added = getTask(itemCount);
-        assert added instanceof Deadline : "Added task should be a Deadline";
-        assert ((Deadline) added).getBy().equals(by) : "Deadline by date should match";
+        Optional<Task> added = getTask(itemCount);
+        assert added.isPresent() && added.get() instanceof Deadline : "Added task should be a Deadline";
         return true;
     }
 
-    /**
-     * Adds a new event task to the list.
-     *
-     * @param description The description of the event
-     * @param from The start date/time of the event
-     * @param to The end date/time of the event
-     * @return true if the event was added successfully
-     */
     public boolean addEvent(String description, String from, String to) {
         assert description != null : "Event description cannot be null";
         assert from != null : "Event from date cannot be null";
@@ -102,39 +67,41 @@ public class TaskList extends DisplayableCollection {
         items.add(new Event(description, from, to));
         itemCount++;
 
-        Task added = getTask(itemCount);
-        assert added instanceof Event : "Added task should be an Event";
+        Optional<Task> added = getTask(itemCount);
+        assert added.isPresent() && added.get() instanceof Event : "Added task should be an Event";
         return true;
     }
 
     /**
-     * Returns the task at the specified position in the list.
-     * <p>
-     * Positions are 1-indexed (first task is at position 1).
-     * </p>
+     * Returns the task at the specified position using Optional.
      *
      * @param index The 1-based index of the task to retrieve
-     * @return The task at the specified index, or null if the index is invalid
+     * @return Optional containing the task, or empty if index is invalid
      */
-    public Task getTask(int index) {
+    public Optional<Task> getTask(int index) {
         if (index >= 1 && index <= itemCount) {
             assert items.get(index - 1) instanceof Task : "Item at valid index should be a Task";
+            return Optional.of((Task) items.get(index - 1));
         }
-
-        Displayable item = getItem(index);
-        return (item instanceof Task) ? (Task) item : null;
+        return Optional.empty();
     }
 
     /**
-     * Removes and returns the task at the specified position in the list.
-     * <p>
-     * Positions are 1-indexed (first task is at position 1).
-     * </p>
+     * Returns the last task in the list.
+     *
+     * @return Optional containing the last task, or empty if list is empty
+     */
+    public Optional<Task> getLastTask() {
+        return getTask(itemCount);
+    }
+
+    /**
+     * Removes and returns the task at the specified position using Optional.
      *
      * @param index The 1-based index of the task to delete
-     * @return The deleted task, or null if the index is invalid
+     * @return Optional containing the deleted task, or empty if index is invalid
      */
-    public Task deleteTask(int index) {
+    public Optional<Task> deleteTask(int index) {
         if (index >= 1 && index <= itemCount) {
             assert items.get(index - 1) instanceof Task : "Item to delete should be a Task";
             int oldCount = itemCount;
@@ -142,8 +109,26 @@ public class TaskList extends DisplayableCollection {
             Displayable removed = removeItem(index);
 
             assert itemCount == oldCount - 1 : "Item count should decrease by 1 after deletion";
-            return (removed instanceof Task) ? (Task) removed : null;
+            return Optional.ofNullable((removed instanceof Task) ? (Task) removed : null);
         }
-        return null;
+        return Optional.empty();
+    }
+
+    /**
+     * Returns a string representation of all tasks.
+     */
+    public String listAllItems() {
+        if (itemCount == 0) {
+            return Messages.EMPTY_LIST;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(Messages.LIST_HEADER).append("\n");
+        for (int i = 0; i < itemCount; i++) {
+            sb.append("  ").append(i + 1).append(". ")
+                    .append(items.get(i).getDisplayString()).append("\n");
+        }
+        sb.append(String.format(Messages.LIST_TOTAL, itemCount));
+        return sb.toString();
     }
 }

@@ -1,6 +1,7 @@
 package gigglebytes.task;
 
 import gigglebytes.util.Displayable;
+import gigglebytes.util.Messages;
 
 /**
  * Represents a task in the GiggleBytes application.
@@ -15,9 +16,6 @@ public abstract class Task implements Displayable {
 
     /**
      * Constructs a new Task with the given description.
-     * <p>
-     * The task is initially marked as not done.
-     * </p>
      *
      * @param description The description of the task
      */
@@ -65,6 +63,32 @@ public abstract class Task implements Displayable {
     }
 
     /**
+     * Attempts to mark the task as done and returns appropriate message.
+     *
+     * @return Message indicating result of the operation
+     */
+    public String tryMarkAsDone() {
+        if (isDone) {
+            return Messages.ALREADY_DONE;
+        }
+        markAsDone();
+        return Messages.MARK_DONE;
+    }
+
+    /**
+     * Attempts to mark the task as not done and returns appropriate message.
+     *
+     * @return Message indicating result of the operation
+     */
+    public String tryMarkAsNotDone() {
+        if (!isDone) {
+            return Messages.ALREADY_NOT_DONE;
+        }
+        markAsNotDone();
+        return Messages.MARK_NOT_DONE;
+    }
+
+    /**
      * Returns the status icon for display purposes.
      * <p>
      * [X] for done tasks, [ ] for not done tasks.
@@ -78,12 +102,6 @@ public abstract class Task implements Displayable {
 
     /**
      * Returns the type icon for this task.
-     * <p>
-     * Must be implemented by subclasses:
-     * - Todo returns "T"
-     * - Deadline returns "D"
-     * - Event returns "E"
-     * </p>
      *
      * @return The type icon string
      */
@@ -91,10 +109,6 @@ public abstract class Task implements Displayable {
 
     /**
      * Returns the display string representation of the task.
-     * <p>
-     * Format: [TypeIcon][StatusIcon] Description
-     * Example: [T][X] Buy groceries
-     * </p>
      *
      * @return The display string for the task
      */
@@ -106,9 +120,6 @@ public abstract class Task implements Displayable {
 
     /**
      * Returns the string representation of the task.
-     * <p>
-     * Same as getDisplayString().
-     * </p>
      *
      * @return The string representation of the task
      */
