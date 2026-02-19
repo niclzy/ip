@@ -27,6 +27,7 @@ public final class Messages {
     public static final String EMPTY_INPUT = "GiggleBytes is listening... type something!";
     public static final String UNKNOWN_COMMAND = "I'm a bit confused! >.< I don't know what that means!";
     public static final String COULD_NOT_DELETE = "Could not delete task %d! ;-;";
+    public static final String EMPTY_LIST_SORT = "Your list is empty! Nothing to sort.";
 
     // Success messages
     public static final String TASK_ADDED = "Got it. I've added this task:";
@@ -40,6 +41,7 @@ public final class Messages {
     public static final String TASKS_COMPLETED = "Tasks completed today: %d >.<";
     public static final String LOADED_TASKS = "Loaded %d tasks from save file! >.<";
     public static final String NO_SAVED_DATA = "No saved data found. Starting fresh! >.<";
+    public static final String SORTED = "Tasks sorted by %s!";
 
     // List messages
     public static final String LIST_HEADER = "Here are your tasks:";

@@ -311,4 +311,40 @@ public class ParserTest {
         Command command = Parser.parse("find    multiple words   ");
         assertInstanceOf(FindCommand.class, command);
     }
+
+    @Test
+    public void testParseSortCommand() throws GiggleBytesException {
+        Command command = Parser.parse("sort date");
+        assertInstanceOf(SortCommand.class, command);
+    }
+
+    @Test
+    public void testParseSortCommandWithReverse() throws GiggleBytesException {
+        Command command = Parser.parse("sort date reverse");
+        assertInstanceOf(SortCommand.class, command);
+    }
+
+    @Test
+    public void testParseSortCommandWithDesc() throws GiggleBytesException {
+        Command command = Parser.parse("sort date desc");
+        assertInstanceOf(SortCommand.class, command);
+    }
+
+    @Test
+    public void testParseSortCommandDefault() throws GiggleBytesException {
+        Command command = Parser.parse("sort");
+        assertInstanceOf(SortCommand.class, command);
+    }
+
+    @Test
+    public void testParseSortCommandByType() throws GiggleBytesException {
+        Command command = Parser.parse("sort type");
+        assertInstanceOf(SortCommand.class, command);
+    }
+
+    @Test
+    public void testParseSortCommandByStatus() throws GiggleBytesException {
+        Command command = Parser.parse("sort status");
+        assertInstanceOf(SortCommand.class, command);
+    }
 }

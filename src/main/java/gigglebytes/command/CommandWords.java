@@ -13,6 +13,7 @@ public final class CommandWords {
     public static final String DEADLINE = "deadline";
     public static final String EVENT = "event";
     public static final String DELETE = "delete";
+    public static final String SORT = "sort";
 
     private CommandWords() {} // Prevents instantiation
 }
