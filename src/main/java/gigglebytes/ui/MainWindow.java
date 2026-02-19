@@ -53,6 +53,7 @@ public class MainWindow extends AnchorPane {
                 + "  event [description] /from [start] /to [end]\n"
                 + "  list\n"
                 + "  find [keyword]\n"
+                + "  sort [date|description|status|type]\n"  // ADD THIS LINE
                 + "  mark [number]\n"
                 + "  unmark [number]\n"
                 + "  delete [number]\n"
@@ -85,7 +86,6 @@ public class MainWindow extends AnchorPane {
 
         userInput.clear();
 
-        // Save tasks if it was a bye command
         if (input.trim().equalsIgnoreCase("bye")) {
             giggleBytes.saveTasks();
         }
