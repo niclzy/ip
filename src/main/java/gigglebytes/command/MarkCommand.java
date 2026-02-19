@@ -11,7 +11,7 @@ import gigglebytes.task.Task;
  */
 public class MarkCommand extends Command {
     private int taskNumber;
-    private boolean markAsDone;
+    private boolean isMarkAsDone;
 
     /**
      * Constructs a MarkCommand for the specified task number and action.
@@ -23,7 +23,7 @@ public class MarkCommand extends Command {
         assert taskNumber > 0 : "Task number must be positive";
 
         this.taskNumber = taskNumber;
-        this.markAsDone = markAsDone;
+        this.isMarkAsDone = markAsDone;
     }
 
     /**
@@ -40,7 +40,7 @@ public class MarkCommand extends Command {
         assert ui != null : "Ui cannot be null";
 
         if (taskList.getItemCount() == 0) {
-            String actionText = markAsDone ? "mark as done" : "mark as not done";
+            String actionText = isMarkAsDone ? "mark as done" : "mark as not done";
             ui.showMessage("Your task list is empty! There's nothing to " + actionText + "! ;-;");
             return;
         }
@@ -54,7 +54,7 @@ public class MarkCommand extends Command {
         Task task = taskList.getTask(taskNumber);
         assert task != null : "Task at valid index should not be null";
 
-        if (markAsDone) {
+        if (isMarkAsDone) {
             if (!task.isDone()) {
                 task.markAsDone();
                 ui.showMessage("Nice! >.< I've marked this task as done:");
