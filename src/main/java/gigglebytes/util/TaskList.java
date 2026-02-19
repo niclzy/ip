@@ -22,6 +22,7 @@ public class TaskList extends DisplayableCollection {
      */
     public TaskList(int maxCapacity) {
         super(maxCapacity);
+        assert maxCapacity > 0 : "Max capacity must be positive";
     }
 
     /**
@@ -32,10 +33,15 @@ public class TaskList extends DisplayableCollection {
      */
     public TaskList(int maxCapacity, List<Task> loadedTasks) {
         super(maxCapacity);
+        assert maxCapacity > 0 : "Max capacity must be positive";
+        assert loadedTasks != null : "Loaded tasks list cannot be null";
+
         for (Task task : loadedTasks) {
             items.add(task);
             itemCount++;
         }
+
+        assert itemCount == loadedTasks.size() : "Item count should match loaded tasks size";
     }
 
     /**
@@ -45,8 +51,13 @@ public class TaskList extends DisplayableCollection {
      * @return true if the todo was added successfully
      */
     public boolean addTodo(String description) {
+        assert description != null : "Todo description cannot be null";
+        assert !description.trim().isEmpty() : "Todo description cannot be empty";
+
         items.add(new Todo(description));
         itemCount++;
+
+        assert getTask(itemCount) != null : "Task should be added successfully";
         return true;
     }
 
@@ -58,8 +69,17 @@ public class TaskList extends DisplayableCollection {
      * @return true if the deadline was added successfully
      */
     public boolean addDeadline(String description, String by) {
+        assert description != null : "Deadline description cannot be null";
+        assert by != null : "Deadline by date cannot be null";
+        assert !description.trim().isEmpty() : "Deadline description cannot be empty";
+        assert !by.trim().isEmpty() : "Deadline by date cannot be empty";
+
         items.add(new Deadline(description, by));
         itemCount++;
+
+        Task added = getTask(itemCount);
+        assert added instanceof Deadline : "Added task should be a Deadline";
+        assert ((Deadline) added).getBy().equals(by) : "Deadline by date should match";
         return true;
     }
 
@@ -72,8 +92,18 @@ public class TaskList extends DisplayableCollection {
      * @return true if the event was added successfully
      */
     public boolean addEvent(String description, String from, String to) {
+        assert description != null : "Event description cannot be null";
+        assert from != null : "Event from date cannot be null";
+        assert to != null : "Event to date cannot be null";
+        assert !description.trim().isEmpty() : "Event description cannot be empty";
+        assert !from.trim().isEmpty() : "Event from date cannot be empty";
+        assert !to.trim().isEmpty() : "Event to date cannot be empty";
+
         items.add(new Event(description, from, to));
         itemCount++;
+
+        Task added = getTask(itemCount);
+        assert added instanceof Event : "Added task should be an Event";
         return true;
     }
 
@@ -87,6 +117,10 @@ public class TaskList extends DisplayableCollection {
      * @return The task at the specified index, or null if the index is invalid
      */
     public Task getTask(int index) {
+        if (index >= 1 && index <= itemCount) {
+            assert items.get(index - 1) instanceof Task : "Item at valid index should be a Task";
+        }
+
         Displayable item = getItem(index);
         return (item instanceof Task) ? (Task) item : null;
     }
@@ -101,7 +135,15 @@ public class TaskList extends DisplayableCollection {
      * @return The deleted task, or null if the index is invalid
      */
     public Task deleteTask(int index) {
-        Displayable removed = removeItem(index);
-        return (removed instanceof Task) ? (Task) removed : null;
+        if (index >= 1 && index <= itemCount) {
+            assert items.get(index - 1) instanceof Task : "Item to delete should be a Task";
+            int oldCount = itemCount;
+
+            Displayable removed = removeItem(index);
+
+            assert itemCount == oldCount - 1 : "Item count should decrease by 1 after deletion";
+            return (removed instanceof Task) ? (Task) removed : null;
+        }
+        return null;
     }
 }

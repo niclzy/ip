@@ -17,6 +17,10 @@ public class Deadline extends Task {
      */
     public Deadline(String description, String by) {
         super(description);
+
+        assert by != null : "Deadline 'by' date cannot be null";
+        assert !by.trim().isEmpty() : "Deadline 'by' date cannot be empty";
+
         this.by = by;
     }
 
@@ -26,6 +30,7 @@ public class Deadline extends Task {
      * @return The due date/time string
      */
     public String getBy() {
+        assert by != null : "By date should never be null after construction";
         return by;
     }
 
@@ -50,6 +55,7 @@ public class Deadline extends Task {
      */
     @Override
     public String getDisplayString() {
+        assert by != null : "By date should not be null when displaying";
         return super.getDisplayString() + " (by: " + by + ")";
     }
 }

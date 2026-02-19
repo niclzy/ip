@@ -19,6 +19,14 @@ public class Event extends Task {
      */
     public Event(String description, String from, String to) {
         super(description);
+
+        assert from != null : "Event 'from' date cannot be null";
+        assert to != null : "Event 'to' date cannot be null";
+        assert !from.trim().isEmpty() : "Event 'from' date cannot be empty";
+        assert !to.trim().isEmpty() : "Event 'to' date cannot be empty";
+
+        assert !from.equals(to) : "Event start and end times should be different";
+
         this.from = from;
         this.to = to;
     }
@@ -29,6 +37,7 @@ public class Event extends Task {
      * @return The start date/time string
      */
     public String getFrom() {
+        assert from != null : "From date should never be null after construction";
         return from;
     }
 
@@ -38,6 +47,7 @@ public class Event extends Task {
      * @return The end date/time string
      */
     public String getTo() {
+        assert to != null : "To date should never be null after construction";
         return to;
     }
 
@@ -62,6 +72,7 @@ public class Event extends Task {
      */
     @Override
     public String getDisplayString() {
+        assert from != null && to != null : "Both from and to dates should exist when displaying";
         return super.getDisplayString() + " (from: " + from + " to: " + to + ")";
     }
 }

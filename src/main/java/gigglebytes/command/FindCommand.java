@@ -18,6 +18,9 @@ public class FindCommand extends Command {
      * @param keyword The keyword to search for in task descriptions
      */
     public FindCommand(String keyword) {
+        assert keyword != null : "Keyword cannot be null";
+        assert !keyword.trim().isEmpty() : "Keyword cannot be empty";
+
         this.keyword = keyword.toLowerCase(); // Case-insensitive search
     }
 
@@ -30,6 +33,10 @@ public class FindCommand extends Command {
      */
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage) {
+        assert taskList != null : "TaskList cannot be null";
+        assert ui != null : "Ui cannot be null";
+        assert keyword != null : "Keyword should not be null";
+
         int matchCount = 0;
 
         ui.showMessage("Here are the matching tasks in your list:");

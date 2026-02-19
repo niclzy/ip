@@ -29,6 +29,8 @@ public class Parser {
      * @throws GiggleBytesException If the input is empty, invalid, or malformed
      */
     public static Command parse(String userInput) throws GiggleBytesException {
+        assert userInput != null : "User input cannot be null";
+
         String lowerInput = userInput.toLowerCase().trim();
 
         if (lowerInput.startsWith("bye")) {
@@ -64,6 +66,8 @@ public class Parser {
      * @throws GiggleBytesException If the keyword is missing
      */
     private static Command parseFindCommand(String userInput) throws GiggleBytesException {
+        assert userInput != null : "User input cannot be null";
+
         if (userInput.length() <= 4) {
             throw new GiggleBytesException("Please specify a keyword to search for!\nFormat: 'find [keyword]'");
         }
@@ -74,6 +78,7 @@ public class Parser {
             throw new GiggleBytesException("Please specify a keyword to search for!\nFormat: 'find [keyword]'");
         }
 
+        assert !keyword.isEmpty() : "Keyword should not be empty after validation";
         return new FindCommand(keyword);
     }
 
@@ -86,10 +91,11 @@ public class Parser {
      * @throws GiggleBytesException If the task number is missing or invalid
      */
     private static Command parseMarkCommand(String userInput, boolean markAsDone) throws GiggleBytesException {
+        assert userInput != null : "User input cannot be null";
+
         String action = markAsDone ? "mark" : "unmark";
         int actionLength = action.length();
 
-        // Make sure we have enough characters
         if (userInput.length() <= actionLength) {
             String actionText = markAsDone ? "mark as done" : "mark as not done";
             throw new GiggleBytesException("Please specify which task to " + actionText + "!\nFormat: '" + action + " [number]'");
@@ -107,6 +113,8 @@ public class Parser {
             if (taskNumber <= 0) {
                 throw new GiggleBytesException("Task number must be positive! >.<\nPlease use the format: '" + action + " [number]' where number is 1 or higher");
             }
+
+            assert taskNumber > 0 : "Task number should be positive after validation";
             return new MarkCommand(taskNumber, markAsDone);
         } catch (NumberFormatException e) {
             throw new GiggleBytesException("That doesn't look like a valid number! >.<\nPlease use the format: '" + action + " [number]'");
@@ -121,6 +129,8 @@ public class Parser {
      * @throws GiggleBytesException If the description is empty
      */
     private static Command parseTodoCommand(String userInput) throws GiggleBytesException {
+        assert userInput != null : "User input cannot be null";
+
         if (userInput.length() <= 4) {
             throw new GiggleBytesException("Oopsies! The description of a todo cannot be empty. ;-;");
         }
@@ -131,6 +141,7 @@ public class Parser {
             throw new GiggleBytesException("Oopsies! The description of a todo cannot be empty. ;-;");
         }
 
+        assert !description.isEmpty() : "Description should not be empty after validation";
         return new AddTodoCommand(description);
     }
 
@@ -142,6 +153,8 @@ public class Parser {
      * @throws GiggleBytesException If the format is invalid or parameters are missing
      */
     private static Command parseDeadlineCommand(String userInput) throws GiggleBytesException {
+        assert userInput != null : "User input cannot be null";
+
         if (userInput.length() <= 8) {
             throw new GiggleBytesException("Hmm... Please provide description and deadline!\nFormat: deadline [description] /by [date/time]");
         }
@@ -165,6 +178,9 @@ public class Parser {
         String description = parts[0].trim();
         String by = parts[1].trim();
 
+        assert description != null && !description.isEmpty() : "Description should be valid";
+        assert by != null && !by.isEmpty() : "By date should be valid";
+
         return new AddDeadlineCommand(description, by);
     }
 
@@ -176,6 +192,8 @@ public class Parser {
      * @throws GiggleBytesException If the format is invalid or parameters are missing
      */
     private static Command parseEventCommand(String userInput) throws GiggleBytesException {
+        assert userInput != null : "User input cannot be null";
+
         if (userInput.length() <= 5) {
             throw new GiggleBytesException("Hmm... Please use the format: event [description] /from [start] /to [end]");
         }
@@ -209,6 +227,10 @@ public class Parser {
         String from = parts[1].trim();
         String to = parts[2].trim();
 
+        assert description != null && !description.isEmpty() : "Description should be valid";
+        assert from != null && !from.isEmpty() : "From date should be valid";
+        assert to != null && !to.isEmpty() : "To date should be valid";
+
         return new AddEventCommand(description, from, to);
     }
 
@@ -220,6 +242,8 @@ public class Parser {
      * @throws GiggleBytesException If the task number is missing or invalid
      */
     private static Command parseDeleteCommand(String userInput) throws GiggleBytesException {
+        assert userInput != null : "User input cannot be null";
+
         if (userInput.length() <= 6) {
             throw new GiggleBytesException("Please specify which task to delete!\nFormat: 'delete [number]'");
         }
@@ -235,6 +259,8 @@ public class Parser {
             if (taskNumber <= 0) {
                 throw new GiggleBytesException("Task number must be positive! >.<\nPlease use the format: 'delete [number]' where number is 1 or higher");
             }
+
+            assert taskNumber > 0 : "Task number should be positive after validation";
             return new DeleteCommand(taskNumber);
         } catch (NumberFormatException e) {
             throw new GiggleBytesException("That doesn't look like a valid number! >.<\nPlease use the format: 'delete [number]'");

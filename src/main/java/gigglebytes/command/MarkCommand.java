@@ -20,6 +20,8 @@ public class MarkCommand extends Command {
      * @param markAsDone true to mark as done, false to mark as not done
      */
     public MarkCommand(int taskNumber, boolean markAsDone) {
+        assert taskNumber > 0 : "Task number must be positive";
+
         this.taskNumber = taskNumber;
         this.markAsDone = markAsDone;
     }
@@ -34,14 +36,15 @@ public class MarkCommand extends Command {
      */
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage) throws GiggleBytesException {
-        // First check if the list is empty
+        assert taskList != null : "TaskList cannot be null";
+        assert ui != null : "Ui cannot be null";
+
         if (taskList.getItemCount() == 0) {
             String actionText = markAsDone ? "mark as done" : "mark as not done";
             ui.showMessage("Your task list is empty! There's nothing to " + actionText + "! ;-;");
             return;
         }
 
-        // Then check if the task number is valid
         if (taskNumber < 1 || taskNumber > taskList.getItemCount()) {
             ui.showMessage("Task number " + taskNumber + " doesn't exist! ;-;");
             ui.showMessage("Please choose a number between 1 and " + taskList.getItemCount());
@@ -49,6 +52,7 @@ public class MarkCommand extends Command {
         }
 
         Task task = taskList.getTask(taskNumber);
+        assert task != null : "Task at valid index should not be null";
 
         if (markAsDone) {
             if (!task.isDone()) {
