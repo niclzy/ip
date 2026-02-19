@@ -24,8 +24,8 @@ import java.time.format.ResolverStyle;
  * Handles loading and saving of tasks to persistent storage.
  */
 public class Storage {
-    private static final String DATA_DIR = "./data";
-    private static final String DATA_FILE = "./data/gigglebytes.txt";
+    private static final String DATA_DIR = Paths.get(System.getProperty("user.dir"), "data").toString();
+    private static final String DATA_FILE = Paths.get(DATA_DIR, "gigglebytes.txt").toString();
     private static final DateTimeFormatter FILE_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
 
@@ -33,6 +33,7 @@ public class Storage {
         try {
             Files.createDirectories(Paths.get(DATA_DIR));
             File dir = new File(DATA_DIR);
+            System.out.println("Data directory: " + DATA_DIR); // Debug line
             assert dir.exists() && dir.isDirectory() : "Data directory should exist after construction";
         } catch (IOException e) {
             System.out.println("Error creating data directory! ;-;");
@@ -42,6 +43,8 @@ public class Storage {
     public List<Task> loadTasks() {
         List<Task> tasks = new ArrayList<>();
         File file = new File(DATA_FILE);
+
+        System.out.println("Looking for data file: " + DATA_FILE);
 
         if (!file.exists()) {
             System.out.println(Messages.NO_SAVED_DATA);
@@ -156,24 +159,21 @@ public class Storage {
         assert taskList != null : "TaskList cannot be null when saving";
 
         try (FileWriter writer = new FileWriter(DATA_FILE)) {
-            int savedCount = writeTasksToFile(writer, taskList);
+            int savedCount = 0;
+            for (int i = 1; i <= taskList.getItemCount(); i++) {
+                Task task = taskList.getTask(i).orElse(null);
+                if (task != null) {
+                    String line = taskToFileString(task);
+                    writer.write(line + System.lineSeparator());
+                    savedCount++;
+                }
+            }
+            System.out.println("Saved " + savedCount + " tasks to " + DATA_FILE); // Debug line
             assert savedCount == taskList.getItemCount() : "Should have saved all tasks";
         } catch (IOException e) {
             System.out.println("Error saving tasks to file! ;-;");
+            e.printStackTrace();
         }
-    }
-
-    private int writeTasksToFile(FileWriter writer, TaskList taskList) throws IOException {
-        int savedCount = 0;
-        for (int i = 1; i <= taskList.getItemCount(); i++) {
-            Task task = taskList.getTask(i).orElse(null);
-            if (task != null) {
-                String line = taskToFileString(task);
-                writer.write(line + System.lineSeparator());
-                savedCount++;
-            }
-        }
-        return savedCount;
     }
 
     String taskToFileString(Task task) {
