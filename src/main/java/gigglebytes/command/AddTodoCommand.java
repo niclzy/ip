@@ -4,12 +4,12 @@ import gigglebytes.exception.GiggleBytesException;
 import gigglebytes.storage.Storage;
 import gigglebytes.util.TaskList;
 import gigglebytes.Ui;
-import gigglebytes.task.Task;
+import gigglebytes.util.Messages;
 
 /**
  * Represents a command to add a todo task to the task list.
  */
-public class AddTodoCommand extends Command {
+public class AddTodoCommand extends AddCommand {
     private String description;
 
     /**
@@ -24,25 +24,15 @@ public class AddTodoCommand extends Command {
         this.description = description;
     }
 
-    /**
-     * Executes the command by adding a todo task to the task list.
-     *
-     * @param taskList The TaskList to add the todo to
-     * @param ui The Ui to display messages to the user
-     * @param storage The Storage to save tasks (not used in this command)
-     * @throws GiggleBytesException If the task list is full and cannot add more tasks
-     */
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage) throws GiggleBytesException {
         assert taskList != null : "TaskList cannot be null";
         assert ui != null : "Ui cannot be null";
 
         if (!taskList.addTodo(description)) {
-            throw new GiggleBytesException("Task storage is full! Can't add more tasks. ;-;");
+            throw new GiggleBytesException(Messages.STORAGE_FULL);
         }
 
-        ui.showMessage("Got it. I've added this task:");
-        ui.showMessage("  " + taskList.getTask(taskList.getItemCount()));
-        ui.showMessage("Now you have " + taskList.getItemCount() + " tasks in the list.");
+        showConfirmation(taskList, ui);
     }
 }

@@ -8,14 +8,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for the {@link TaskList} class.
- * <p>
- * Tests task addition, retrieval, deletion, and list management functionality.
- * Includes tests for edge cases and error conditions.
- * </p>
  */
 public class TaskListTest {
 
@@ -31,8 +29,9 @@ public class TaskListTest {
         assertTrue(taskList.addTodo("Test todo"));
         assertEquals(1, taskList.getItemCount());
 
-        Task task = taskList.getTask(1);
-        assertNotNull(task);
+        Optional<Task> taskOpt = taskList.getTask(1);
+        assertTrue(taskOpt.isPresent());
+        Task task = taskOpt.get();
         assertInstanceOf(Todo.class, task);
         assertEquals("Test todo", task.getDescription());
     }
@@ -42,8 +41,9 @@ public class TaskListTest {
         assertTrue(taskList.addDeadline("Submit report", "2024-12-31 2359"));
         assertEquals(1, taskList.getItemCount());
 
-        Task task = taskList.getTask(1);
-        assertNotNull(task);
+        Optional<Task> taskOpt = taskList.getTask(1);
+        assertTrue(taskOpt.isPresent());
+        Task task = taskOpt.get();
         assertInstanceOf(Deadline.class, task);
         assertEquals("Submit report", task.getDescription());
     }
@@ -53,8 +53,9 @@ public class TaskListTest {
         assertTrue(taskList.addEvent("Team meeting", "2024-10-10 1400", "2024-10-10 1500"));
         assertEquals(1, taskList.getItemCount());
 
-        Task task = taskList.getTask(1);
-        assertNotNull(task);
+        Optional<Task> taskOpt = taskList.getTask(1);
+        assertTrue(taskOpt.isPresent());
+        Task task = taskOpt.get();
         assertInstanceOf(Event.class, task);
         assertEquals("Team meeting", task.getDescription());
     }
@@ -64,22 +65,22 @@ public class TaskListTest {
         taskList.addTodo("Task 1");
         taskList.addTodo("Task 2");
 
-        Task task1 = taskList.getTask(1);
-        Task task2 = taskList.getTask(2);
+        Optional<Task> taskOpt1 = taskList.getTask(1);
+        Optional<Task> taskOpt2 = taskList.getTask(2);
 
-        assertNotNull(task1);
-        assertNotNull(task2);
-        assertEquals("Task 1", task1.getDescription());
-        assertEquals("Task 2", task2.getDescription());
+        assertTrue(taskOpt1.isPresent());
+        assertTrue(taskOpt2.isPresent());
+        assertEquals("Task 1", taskOpt1.get().getDescription());
+        assertEquals("Task 2", taskOpt2.get().getDescription());
     }
 
     @Test
     public void testGetTaskWithInvalidIndex() {
         taskList.addTodo("Task 1");
 
-        assertNull(taskList.getTask(0));  // Below valid range
-        assertNull(taskList.getTask(2));  // Above valid range
-        assertNull(taskList.getTask(-1)); // Negative index
+        assertTrue(taskList.getTask(0).isEmpty());  // Below valid range
+        assertTrue(taskList.getTask(2).isEmpty());  // Above valid range
+        assertTrue(taskList.getTask(-1).isEmpty()); // Negative index
     }
 
     @Test
@@ -88,23 +89,28 @@ public class TaskListTest {
         taskList.addTodo("Task 2");
         taskList.addTodo("Task 3");
 
-        Task deleted = taskList.deleteTask(2);
-        assertNotNull(deleted);
-        assertEquals("Task 2", deleted.getDescription());
+        Optional<Task> deletedOpt = taskList.deleteTask(2);
+        assertTrue(deletedOpt.isPresent());
+        assertEquals("Task 2", deletedOpt.get().getDescription());
         assertEquals(2, taskList.getItemCount());
 
         // Verify remaining tasks
-        assertEquals("Task 1", taskList.getTask(1).getDescription());
-        assertEquals("Task 3", taskList.getTask(2).getDescription());
+        Optional<Task> taskOpt1 = taskList.getTask(1);
+        Optional<Task> taskOpt2 = taskList.getTask(2);
+
+        assertTrue(taskOpt1.isPresent());
+        assertTrue(taskOpt2.isPresent());
+        assertEquals("Task 1", taskOpt1.get().getDescription());
+        assertEquals("Task 3", taskOpt2.get().getDescription());
     }
 
     @Test
     public void testDeleteTaskWithInvalidIndex() {
         taskList.addTodo("Task 1");
 
-        assertNull(taskList.deleteTask(0));
-        assertNull(taskList.deleteTask(2));
-        assertNull(taskList.deleteTask(-1));
+        assertTrue(taskList.deleteTask(0).isEmpty());
+        assertTrue(taskList.deleteTask(2).isEmpty());
+        assertTrue(taskList.deleteTask(-1).isEmpty());
         assertEquals(1, taskList.getItemCount()); // Count should remain unchanged
     }
 
@@ -117,11 +123,29 @@ public class TaskListTest {
         TaskList initializedTaskList = new TaskList(10, loadedTasks);
         assertEquals(2, initializedTaskList.getItemCount());
 
-        Task task1 = initializedTaskList.getTask(1);
-        Task task2 = initializedTaskList.getTask(2);
+        Optional<Task> taskOpt1 = initializedTaskList.getTask(1);
+        Optional<Task> taskOpt2 = initializedTaskList.getTask(2);
 
-        assertInstanceOf(Todo.class, task1);
-        assertInstanceOf(Deadline.class, task2);
+        assertTrue(taskOpt1.isPresent());
+        assertTrue(taskOpt2.isPresent());
+        assertInstanceOf(Todo.class, taskOpt1.get());
+        assertInstanceOf(Deadline.class, taskOpt2.get());
+    }
+
+    @Test
+    public void testGetLastTask() {
+        taskList.addTodo("Task 1");
+        taskList.addTodo("Task 2");
+
+        Optional<Task> lastTask = taskList.getLastTask();
+        assertTrue(lastTask.isPresent());
+        assertEquals("Task 2", lastTask.get().getDescription());
+    }
+
+    @Test
+    public void testGetLastTaskEmptyList() {
+        Optional<Task> lastTask = taskList.getLastTask();
+        assertTrue(lastTask.isEmpty());
     }
 
     @Test

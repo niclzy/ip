@@ -5,6 +5,7 @@ import gigglebytes.storage.Storage;
 import gigglebytes.util.TaskList;
 import gigglebytes.Ui;
 import gigglebytes.task.Task;
+import gigglebytes.util.Messages;
 
 /**
  * Represents a command to delete a task from the task list.
@@ -22,37 +23,41 @@ public class DeleteCommand extends Command {
         this.taskNumber = taskNumber;
     }
 
-    /**
-     * Executes the command by deleting the specified task from the task list.
-     *
-     * @param taskList The TaskList to delete the task from
-     * @param ui The Ui to display messages to the user
-     * @param storage The Storage to save tasks (not used in this command)
-     */
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage) {
         assert taskList != null : "TaskList cannot be null";
         assert ui != null : "Ui cannot be null";
 
-        if (taskList.getItemCount() == 0) {
+        if (isTaskListEmpty(taskList)) {
             ui.showMessage("Your task list is empty! There's nothing to delete! ;-;");
             return;
         }
 
-        if (taskNumber < 1 || taskNumber > taskList.getItemCount()) {
-            ui.showMessage("Task number " + taskNumber + " doesn't exist! ;-;");
-            ui.showMessage("Please choose a number between 1 and " + taskList.getItemCount());
+        if (isTaskNumberInvalid(taskList)) {
+            ui.showMessage(String.format(Messages.TASK_NOT_FOUND, taskNumber));
+            ui.showMessage(String.format(Messages.CHOOSE_VALID_NUMBER, taskList.getItemCount()));
             return;
         }
 
-        Task task = taskList.deleteTask(taskNumber);
+        deleteAndConfirm(taskList, ui);
+    }
 
-        if (task != null) {
-            ui.showMessage("Noted! I've removed this task:");
-            ui.showMessage("  " + task);
-            ui.showMessage("Now you have " + taskList.getItemCount() + " tasks in the list.");
-        } else {
-            ui.showMessage("Could not delete task " + taskNumber + "! ;-;");
-        }
+    private boolean isTaskListEmpty(TaskList taskList) {
+        return taskList.getItemCount() == 0;
+    }
+
+    private boolean isTaskNumberInvalid(TaskList taskList) {
+        return taskNumber < 1 || taskNumber > taskList.getItemCount();
+    }
+
+    private void deleteAndConfirm(TaskList taskList, Ui ui) {
+        taskList.deleteTask(taskNumber).ifPresentOrElse(
+                task -> {
+                    ui.showMessage(Messages.TASK_REMOVED);
+                    ui.showMessage("  " + task);
+                    ui.showMessage(String.format(Messages.TASK_COUNT, taskList.getItemCount()));
+                },
+                () -> ui.showMessage(String.format(Messages.COULD_NOT_DELETE, taskNumber))
+        );
     }
 }
