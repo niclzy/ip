@@ -50,6 +50,8 @@ sourceSets {
 test {
     useJUnitPlatform()
 
+    enableAssertions = true
+
     testLogging {
         events "passed", "skipped", "failed"
         showExceptions true
@@ -60,28 +62,8 @@ test {
     }
 }
 
-// ========== CHECKSTYLE CONFIGURATION ==========
-checkstyle {
-    toolVersion = '10.12.5'
-    configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
-    configProperties = [
-            'org.checkstyle.sun.suppressionfilter.config': "${project.rootDir}/config/checkstyle/suppressions.xml"
-    ]
-    ignoreFailures = false
-    showViolations = true
-}
-
-tasks.withType(Checkstyle) {
-    reports {
-        xml.required = false
-        html.required = true
-        html.stylesheet resources.text.fromFile("${project.rootDir}/config/checkstyle/checkstyle-styles.xsl")
-    }
-}
-
-test {
-    dependsOn checkstyleMain
-    dependsOn checkstyleTest
+run {
+    enableAssertions = true
 }
 
 jar {

@@ -22,6 +22,9 @@ public abstract class Task implements Displayable {
      * @param description The description of the task
      */
     public Task(String description) {
+        assert description != null : "Task description cannot be null";
+        assert !description.trim().isEmpty() : "Task description cannot be empty";
+
         this.description = description;
         this.isDone = false;
     }
@@ -32,6 +35,7 @@ public abstract class Task implements Displayable {
      * @return The task description
      */
     public String getDescription() {
+        assert description != null : "Description should never be null after construction";
         return description;
     }
 
@@ -48,6 +52,7 @@ public abstract class Task implements Displayable {
      * Marks the task as done.
      */
     public void markAsDone() {
+        assert !isDone : "Task should not be already done when marking as done";
         this.isDone = true;
     }
 
@@ -55,6 +60,7 @@ public abstract class Task implements Displayable {
      * Marks the task as not done.
      */
     public void markAsNotDone() {
+        assert isDone : "Task should be done when marking as not done";
         this.isDone = false;
     }
 
@@ -94,6 +100,7 @@ public abstract class Task implements Displayable {
      */
     @Override
     public String getDisplayString() {
+        assert getTypeIcon() != null : "Type icon cannot be null";
         return "[" + getTypeIcon() + "]" + getStatusIcon() + " " + getDescription();
     }
 

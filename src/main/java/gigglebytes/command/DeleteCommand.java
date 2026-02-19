@@ -18,6 +18,7 @@ public class DeleteCommand extends Command {
      * @param taskNumber The 1-based index of the task to delete
      */
     public DeleteCommand(int taskNumber) {
+        assert taskNumber > 0 : "Task number must be positive";
         this.taskNumber = taskNumber;
     }
 
@@ -30,13 +31,14 @@ public class DeleteCommand extends Command {
      */
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage) {
-        // First check if the list is empty
+        assert taskList != null : "TaskList cannot be null";
+        assert ui != null : "Ui cannot be null";
+
         if (taskList.getItemCount() == 0) {
             ui.showMessage("Your task list is empty! There's nothing to delete! ;-;");
             return;
         }
 
-        // Then check if the task number is valid
         if (taskNumber < 1 || taskNumber > taskList.getItemCount()) {
             ui.showMessage("Task number " + taskNumber + " doesn't exist! ;-;");
             ui.showMessage("Please choose a number between 1 and " + taskList.getItemCount());

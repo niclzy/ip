@@ -19,7 +19,6 @@ import java.util.List;
 public class GiggleBytes {
     private Storage storage;
     private TaskList taskList;
-    private Ui ui;
 
     /**
      * Constructs a new GiggleBytes instance.
@@ -29,6 +28,9 @@ public class GiggleBytes {
         storage = new Storage();
         List<Task> loadedTasks = storage.loadTasks();
         taskList = new TaskList(100, loadedTasks);
+
+        assert storage != null : "Storage should be initialized";
+        assert taskList != null : "TaskList should be initialized";
     }
 
     /**
@@ -39,10 +41,12 @@ public class GiggleBytes {
      * @return The response from GiggleBytes
      */
     public String getResponse(String input) {
+        assert input != null : "Input cannot be null";
+
         try {
             Command command = Parser.parse(input);
+            assert command != null : "Parsed command should not be null";
 
-            // For GUI, we need to capture output
             GuiUi guiUi = new GuiUi();
             command.execute(taskList, guiUi, storage);
 
@@ -60,6 +64,9 @@ public class GiggleBytes {
      * Saves tasks to storage.
      */
     public void saveTasks() {
+        assert taskList != null : "TaskList should exist when saving";
+        assert storage != null : "Storage should exist when saving";
+
         storage.saveTasks(taskList);
     }
 }

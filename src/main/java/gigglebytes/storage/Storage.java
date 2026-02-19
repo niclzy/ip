@@ -39,6 +39,9 @@ public class Storage {
     public Storage() {
         try {
             Files.createDirectories(Paths.get(DATA_DIR));
+
+            File dir = new File(DATA_DIR);
+            assert dir.exists() && dir.isDirectory() : "Data directory should exist after construction";
         } catch (IOException e) {
             System.out.println("Error creating data directory! ;-;");
         }
@@ -88,6 +91,8 @@ public class Storage {
                 System.out.println("Loaded " + tasks.size() + " tasks from save file! >.<");
             }
 
+            assert tasks != null : "Tasks list should never be null";
+
         } catch (IOException e) {
             System.out.println("Error loading tasks from file! ;-;");
         }
@@ -112,6 +117,8 @@ public class Storage {
      * @throws GiggleBytesException If the line format is invalid
      */
     Task parseTask(String line) throws GiggleBytesException {
+        assert line != null : "Line to parse cannot be null";
+
         try {
             String[] parts = line.split(" \\| ");
 
@@ -152,6 +159,9 @@ public class Storage {
                 task.markAsDone();
             }
 
+            assert task != null : "Parsed task should not be null";
+            assert task.getDescription().equals(description) : "Task description should match parsed description";
+
             return task;
 
         } catch (Exception e) {
@@ -168,18 +178,24 @@ public class Storage {
      * @param taskList The TaskList containing tasks to save
      */
     public void saveTasks(TaskList taskList) {
+        assert taskList != null : "TaskList cannot be null when saving";
+
         try {
             FileWriter writer = new FileWriter(DATA_FILE);
 
+            int savedCount = 0;
             for (int i = 1; i <= taskList.getItemCount(); i++) {
                 Task task = taskList.getTask(i);
                 if (task != null) {
                     String line = taskToFileString(task);
                     writer.write(line + System.lineSeparator());
+                    savedCount++;
                 }
             }
 
             writer.close();
+
+            assert savedCount == taskList.getItemCount() : "Should have saved all tasks";
 
         } catch (IOException e) {
             System.out.println("Error saving tasks to file! ;-;");
@@ -193,6 +209,8 @@ public class Storage {
      * @return The string representation of the task for file storage
      */
     String taskToFileString(Task task) {
+        assert task != null : "Task to convert cannot be null";
+
         StringBuilder sb = new StringBuilder();
 
         sb.append(task.getTypeIcon()).append(" | ");
@@ -208,6 +226,9 @@ public class Storage {
             sb.append(" | ").append(event.getTo());
         }
 
-        return sb.toString();
+        String result = sb.toString();
+        assert result != null && !result.isEmpty() : "File string should not be empty";
+
+        return result;
     }
 }
