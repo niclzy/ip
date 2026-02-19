@@ -9,6 +9,7 @@ import gigglebytes.command.ExitCommand;
 import gigglebytes.command.FindCommand;
 import gigglebytes.command.ListCommand;
 import gigglebytes.command.MarkCommand;
+import gigglebytes.command.SortCommand;
 import gigglebytes.exception.GiggleBytesException;
 import gigglebytes.util.Messages;
 
@@ -25,6 +26,7 @@ public class Parser {
     private static final int MARK_PREFIX_LENGTH = 4;
     private static final int UNMARK_PREFIX_LENGTH = 6;
     private static final int DELETE_PREFIX_LENGTH = 6;
+    private static final int SORT_PREFIX_LENGTH = 4;
 
     /**
      * Parses a user input string and returns the corresponding Command.
@@ -58,6 +60,8 @@ public class Parser {
             return parseDeleteCommand(userInput);
         } else if (userInput.isEmpty()) {
             throw new GiggleBytesException(Messages.EMPTY_INPUT);
+        } else if (lowerInput.startsWith(SORT)) {
+                return parseSortCommand(userInput);
         } else {
             throw new GiggleBytesException(Messages.UNKNOWN_COMMAND);
         }
@@ -245,5 +249,40 @@ public class Parser {
         } catch (NumberFormatException e) {
             throw new GiggleBytesException(String.format(Messages.INVALID_NUMBER, DELETE));
         }
+    }
+
+    private static Command parseSortCommand(String userInput) throws GiggleBytesException {
+        assert userInput != null : "User input cannot be null";
+
+        if (userInput.length() <= SORT_PREFIX_LENGTH) {
+            return new SortCommand("description", false); // Default sort
+        }
+
+        String rest = userInput.substring(SORT_PREFIX_LENGTH).trim();
+
+        if (rest.isEmpty()) {
+            return new SortCommand("description", false); // Default sort
+        }
+
+        // Check for reverse flag
+        boolean isReverse = false;
+        String sortType = rest;
+
+        if (rest.toLowerCase().endsWith(" reverse")) {
+            isReverse = true;
+            sortType = rest.substring(0, rest.length() - 8).trim();
+        } else if (rest.toLowerCase().endsWith(" desc")) {
+            isReverse = true;
+            sortType = rest.substring(0, rest.length() - 5).trim();
+        } else if (rest.toLowerCase().endsWith(" descending")) {
+            isReverse = true;
+            sortType = rest.substring(0, rest.length() - 11).trim();
+        }
+
+        if (sortType.isEmpty()) {
+            sortType = "description";
+        }
+
+        return new SortCommand(sortType, isReverse);
     }
 }
